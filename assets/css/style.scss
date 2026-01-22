@@ -1,6 +1,7 @@
-/* to change the theme's Sass variables, set new values here */
+---
+---
 
-@import "slate";
+@import "{{ site.theme }}";
 
 /* other css */
 
