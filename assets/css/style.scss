@@ -5,10 +5,25 @@
 
 /* other css */
 
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 #header_wrap {
   background: linear-gradient(45deg, #306, #000, #203);
 }
 
 #footer_wrap {
-  background: linear-gradient(-45deg, #306, #000, #003);
+  background: linear-gradient(-45deg, #306, #000, #002);
+}
+
+#main_content_wrap {
+  flex-grow: 1;
 }
