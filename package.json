@@ -1,0 +1,26 @@
+{
+  "name": "dyvoshkola.github.io",
+  "version": "1.0.0",
+  "description": "Cторінка Дивошколи на GitHub",
+  "main": "index.js",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dyvoshkola/dyvoshkola.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/dyvoshkola/dyvoshkola.github.io/issues"
+  },
+  "homepage": "https://github.com/dyvoshkola/dyvoshkola.github.io#readme",
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  }
+}
