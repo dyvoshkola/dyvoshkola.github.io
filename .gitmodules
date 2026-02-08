@@ -1,0 +1,3 @@
+[submodule "docs/knots"]
+	path = docs/knots
+	url = https://github.com/dyvoshkola/knots.git
