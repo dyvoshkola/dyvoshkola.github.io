@@ -10,12 +10,20 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Головна', link: '/' },
+      { text: 'Вузли', link: '/knots/' }
     ],
     sidebar: [
       {
         text: 'Розділ 1',
         items: [
-          { text: 'Приклад', link: '/example' },
+          { text: 'Приклад', link: '/example' }          
+        ]
+      },
+      {
+        text: 'Вузли',
+        items: [
+          { text: 'Вступ', link: '/knots/' },
+          { text: 'Каталог', link: '/knots/library/' }
         ]
       }
     ]
