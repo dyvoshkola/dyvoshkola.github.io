@@ -10,20 +10,27 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Головна', link: '/' },
+      { text: 'Команда', link: '/team' },
       { text: 'Вузли', link: '/knots/' }
     ],
     sidebar: [
       {
-        text: 'Розділ 1',
+        text: 'Проєкт',
         items: [
-          { text: 'Приклад', link: '/example' }          
+          { text: 'Команда', link: '/team' }
         ]
       },
       {
         text: 'Вузли',
         items: [
           { text: 'Вступ', link: '/knots/' },
-          { text: 'Каталог', link: '/knots/library/' }
+          { text: 'Огляд категорій', link: '/knots/categories/' },
+          { text: "З'єднувальні", link: '/knots/bends/' },
+          { text: 'Схоплювальні', link: '/knots/hitches/' },
+          { text: 'Петлі', link: '/knots/loops/' },
+          { text: 'Стопорні', link: '/knots/stopper/' },
+          { text: 'Рятувальні', link: '/knots/rescue/' },
+          { text: 'Теорія вузлів', link: '/knots/theory/' }
         ]
       }
     ]
