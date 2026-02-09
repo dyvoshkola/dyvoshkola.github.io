@@ -1,3 +1,7 @@
 [submodule "docs/knots"]
 	path = docs/knots
 	url = https://github.com/dyvoshkola/knots.git
+  	branch = main
+[submodule "knots"]
+	path = knots
+	url = https://github.com/dyvoshkola/knots.git
