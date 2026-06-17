@@ -1,5 +1,6 @@
 ---
 title: Дивошкола на GitHub
+comments: false
 ---
 
 # Привіт! 👋

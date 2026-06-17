@@ -1,3 +1,7 @@
+---
+articleId: team
+---
+
 # Команда Дивошколи
 
 <a href="https://github.com/yuriyapostol" style="display:flex;align-items:center;flex-wrap:wrap;gap:.25em"><img src="https://github.com/yuriyapostol.png?size=40" alt="yuriyapostol" style="width:24px;height:24px;border-radius:50%"> Юрій Апостол</a>

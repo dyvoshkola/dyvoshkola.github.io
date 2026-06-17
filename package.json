@@ -22,5 +22,8 @@
   "homepage": "https://github.com/dyvoshkola/dyvoshkola.github.io#readme",
   "devDependencies": {
     "vitepress": "^1.6.4"
+  },
+  "dependencies": {
+    "@giscus/vue": "^3.1.1"
   }
 }
