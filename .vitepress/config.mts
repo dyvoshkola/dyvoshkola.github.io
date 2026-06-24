@@ -8,12 +8,53 @@ export default defineConfig({
   base: '/',
 
   themeConfig: {
+    logo: {
+      light: '/logo-light.svg',
+      dark: '/logo-dark.svg',
+      alt: 'Дивошкола'
+    },
+    siteTitle: false,
+
     nav: [
-      { text: 'Головна', link: '/' },
-      { text: 'Команда', link: '/team' },
-      { text: 'Вузли', link: '/knots/' }
+      {
+        text: 'Дивошкола',
+        activeMatch: '^/(|index(.md)?|team(.md)?)$',
+        items: [
+          { text: 'Про проект', link: '/index.html' },
+          { text: 'Команда', link: '/team.html' }
+        ]
+      },
+      { text: 'Вузли',
+        activeMatch: '^/knots/', 
+        items: [
+          { text: 'Огляд', link: '/knots/' },
+          { text: 'Огляд категорій', link: '/knots/categories/' },
+          { text: "З'єднувальні", link: '/knots/bends/' },
+          { text: 'Схоплювальні', link: '/knots/hitches/' },
+          { text: 'Петлі', link: '/knots/loops/' },
+          { text: 'Стопорні', link: '/knots/stopper/' },
+          { text: 'Рятувальні', link: '/knots/rescue/' },
+          { text: 'Теорія вузлів', link: '/knots/theory/' }
+        ]
+      }
     ],
-    sidebar: [
+    sidebar: {
+      '/': [
+        { text: 'Про проект', link: '/index.html' },
+        { text: 'Команда', link: '/team.html' }
+      ],
+      '/knots/': [
+        { text: 'Вузли', link: '/knots/' },
+        { text: 'Огляд категорій', link: '/knots/categories/' },
+        { text: "З'єднувальні", link: '/knots/bends/'},
+        { text: 'Схоплювальні', link: '/knots/hitches/' },
+        { text: 'Петлі', link: '/knots/loops/' },
+        { text: 'Стопорні', link: '/knots/stopper/' },
+        { text: 'Рятувальні', link: '/knots/rescue/' },
+        { text: 'Теорія вузлів', link: '/knots/theory/' }
+      ]
+    }
+    /*sidebar: [
       {
         text: 'Проєкт',
         items: [
@@ -33,6 +74,6 @@ export default defineConfig({
           { text: 'Теорія вузлів', link: '/knots/theory/' }
         ]
       }
-    ]
+    ]*/
   }
 })

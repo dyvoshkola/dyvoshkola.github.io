@@ -2,6 +2,7 @@ import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
 import { h } from 'vue'
 import Comments from './components/Comments.vue'
+import './custom.css'
 
 const theme: Theme = {
   extends: DefaultTheme,
