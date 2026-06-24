@@ -14,6 +14,28 @@ export default defineConfig({
       alt: 'Дивошкола'
     },
     siteTitle: false,
+    outline: {
+      level: [1, 2],
+      label: 'На цій сторінці'
+    },
+    darkModeSwitchLabel: 'Тема',
+    lightModeSwitchTitle: 'Перемкнути на світлу тему',
+    darkModeSwitchTitle: 'Перемкнути на темну тему',
+    sidebarMenuLabel: 'Меню розділу',
+    returnToTopLabel: 'Повернутися догори',
+    langMenuLabel: 'Змінити мову',
+    skipToContentLabel: 'Перейти до вмісту',
+    docFooter: {
+      prev: false,
+      next: false
+    },
+    notFound: {
+      title: 'Сторінку не знайдено',
+      quote: 'Схоже, тут немає того, що ви шукали.',
+      linkLabel: 'Перейти на головну',
+      linkText: 'На головну',
+      code: '404'
+    },
 
     nav: [
       {
@@ -24,10 +46,11 @@ export default defineConfig({
           { text: 'Команда', link: '/team.html' }
         ]
       },
-      { text: 'Вузли',
+      {
+        text: 'Вузли',
         activeMatch: '^/knots/', 
         items: [
-          { text: 'Огляд', link: '/knots/' },
+          { text: 'Вступ', link: '/knots/' },
           { text: 'Огляд категорій', link: '/knots/categories/' },
           { text: "З'єднувальні", link: '/knots/bends/' },
           { text: 'Схоплювальні', link: '/knots/hitches/' },
