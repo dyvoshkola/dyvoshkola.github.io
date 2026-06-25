@@ -1,7 +1,7 @@
 import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
-import { h } from 'vue'
 import Comments from './components/Comments.vue'
+import Layout from './components/Layout.vue'
 import './custom.css'
 
 const theme: Theme = {
@@ -9,13 +9,7 @@ const theme: Theme = {
   enhanceApp({ app }) {
     app.component('Comments', Comments)
   },
-  Layout: () => {
-    return DefaultTheme.Layout
-      ? h(DefaultTheme.Layout, null, {
-          'doc-after': () => h(Comments)
-        })
-      : null
-  }
+  Layout
 }
 
 export default theme
