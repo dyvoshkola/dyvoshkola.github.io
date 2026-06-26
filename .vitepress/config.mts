@@ -252,7 +252,7 @@ export default defineConfig({
         {
           text: 'Вузли',
           items: [
-            { text: 'Вузли', link: '/knots/' },
+            { text: 'Вступ', link: '/knots/' },
             { text: 'Огляд категорій', link: '/knots/categories/' },
             { text: "З'єднувальні", link: '/knots/bends/'},
             { text: 'Схоплювальні', link: '/knots/hitches/' },
