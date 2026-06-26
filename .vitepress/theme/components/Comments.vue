@@ -9,7 +9,7 @@ const { frontmatter, page, isDark } = useData()
 const lightThemeUrl = `data:text/css;charset=utf-8,${encodeURIComponent(lightThemeCss)}`
 const darkThemeUrl = `data:text/css;charset=utf-8,${encodeURIComponent(darkThemeCss)}`
 
-const fallbackArticleId = computed(() => {
+const fallbackId = computed(() => {
   const relativePath = page.value?.relativePath
 
   if (!relativePath) {
@@ -24,17 +24,17 @@ const fallbackArticleId = computed(() => {
     .toLowerCase()
 })
 
-const articleId = computed(() => {
-  const frontmatterArticleId = frontmatter.value?.articleId
+const pageId = computed(() => {
+  const frontmatterId = frontmatter.value?.id
 
-  if (typeof frontmatterArticleId === 'string') {
-    const normalized = frontmatterArticleId.trim()
+  if (typeof frontmatterId === 'string') {
+    const normalized = frontmatterId.trim()
     if (normalized) {
       return normalized
     }
   }
 
-  return fallbackArticleId.value
+  return fallbackId.value
 })
 
 const commentsEnabled = computed(() => frontmatter.value?.comments !== false)
@@ -49,17 +49,17 @@ const giscusTheme = computed(() => {
 </script>
 
 <template>
-  <div v-if="commentsEnabled && articleId" class="comments">
+  <div v-if="commentsEnabled && pageId" class="comments">
     <ClientOnly>
       <Giscus
-        :key="`${articleId}:${giscusTheme}`"
+        :key="`${pageId}:${giscusTheme}`"
         repo="dyvoshkola/dyvoshkola-comments"
         repo-id="R_kgDOS74Suw"
         category="Comments"
         category-id="DIC_kwDOS74Su84C_PHE"
         mapping="specific"
         strict="1"
-        :term="articleId"
+        :term="pageId"
         reactions-enabled="1"
         emit-metadata="0"
         input-position="bottom"
