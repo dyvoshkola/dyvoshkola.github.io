@@ -5,7 +5,6 @@ import VPBackdrop from 'vitepress/dist/client/theme-default/components/VPBackdro
 import VPContent from 'vitepress/dist/client/theme-default/components/VPContent.vue'
 import VPFooter from 'vitepress/dist/client/theme-default/components/VPFooter.vue'
 import VPNav from 'vitepress/dist/client/theme-default/components/VPNav.vue'
-import VPSidebar from 'vitepress/dist/client/theme-default/components/VPSidebar.vue'
 import VPSkipLink from 'vitepress/dist/client/theme-default/components/VPSkipLink.vue'
 import { useData } from 'vitepress/dist/client/theme-default/composables/data'
 import {
@@ -13,6 +12,7 @@ import {
   useSidebar
 } from 'vitepress/dist/client/theme-default/composables/sidebar'
 import Comments from './Comments.vue'
+import Sidebar from './Sidebar.vue'
 import SectionLocalNav from './SectionLocalNav.vue'
 
 const {
@@ -53,10 +53,10 @@ provide('hero-image-slot-exists', heroImageSlotExists)
     </VPNav>
     <SectionLocalNav :open="isSidebarOpen" @open-menu="openSidebar" />
 
-    <VPSidebar :open="isSidebarOpen">
+    <Sidebar :open="isSidebarOpen">
       <template #sidebar-nav-before><slot name="sidebar-nav-before" /></template>
       <template #sidebar-nav-after><slot name="sidebar-nav-after" /></template>
-    </VPSidebar>
+    </Sidebar>
 
     <VPContent>
       <template #page-top><slot name="page-top" /></template>

@@ -217,10 +217,11 @@ export default defineConfig({
     nav: [
       {
         text: 'Дивошкола',
-        activeMatch: '^/(|(index|team)(|\.md|\.html))$',
+        activeMatch: '^/(|(index|team)(|\.md|\.html)|news(\/.*)?)$',
         items: [
           { text: 'Про проект', link: '/index.html' },
-          { text: 'Команда', link: '/team.html' }
+          { text: 'Команда', link: '/team.html' },
+          { text: 'Новини', link: '/news/', activeMatch: '^/news/' }
         ]
       },
       {
@@ -244,7 +245,8 @@ export default defineConfig({
           text: 'Дивошкола',
           items: [
             { text: 'Про проект', link: '/index.html' },
-            { text: 'Команда', link: '/team.html' }
+            { text: 'Команда', link: '/team.html' },
+            { text: 'Новини', link: '/news/', activeMatch: '^/news(/.*)?$' }
           ]
         }
       ],
