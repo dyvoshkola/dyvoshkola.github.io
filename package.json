@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/dyvoshkola/dyvoshkola.github.io#readme",
   "devDependencies": {
+    "@types/node": "^24.13.2",
     "vitepress": "^1.6.4"
   },
   "dependencies": {

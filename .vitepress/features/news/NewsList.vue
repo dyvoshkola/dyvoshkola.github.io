@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useNewsConfig } from './config'
 
 type NewsEntry = {
   title: string
@@ -31,6 +32,8 @@ const props = defineProps<{
   sortBy?: string
 }>()
 
+const newsConfig = useNewsConfig()
+
 function normalizeImportance(value: number | string | undefined) {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return value
@@ -43,15 +46,15 @@ function normalizeImportance(value: number | string | undefined) {
   return 0
 }
 
-function compareValues(a: number | string, b: number | string) {
+function compareValues(a: number | string, b: number | string, locale: string) {
   if (typeof a === 'number' && typeof b === 'number') {
     return a - b
   }
 
-  return String(a).localeCompare(String(b))
+  return String(a).localeCompare(String(b), locale)
 }
 
-function sortItems(items: NewsEntry[], sortBy: string) {
+function sortItems(items: NewsEntry[], sortBy: string, locale: string) {
   const clauses = sortBy
     .split(',')
     .map((part) => part.trim())
@@ -70,7 +73,7 @@ function sortItems(items: NewsEntry[], sortBy: string) {
         continue
       }
 
-      const result = compareValues(a[field], b[field])
+      const result = compareValues(a[field], b[field], locale)
 
       if (result !== 0) {
         return result * direction
@@ -161,6 +164,7 @@ const items = computed(() => {
   const limit = normalizeLimit(props.limit)
   const minImportance = normalizeImportance(props.minImportance)
   const sortBy = props.sortBy ?? '-publishedAt'
+  const locale = newsConfig.value.locale
 
   let filtered = allItems.value.filter((item) => {
     if (props.fromDate && !matchesFromDate(item, props.fromDate)) {
@@ -178,7 +182,7 @@ const items = computed(() => {
     return true
   })
 
-  filtered = sortItems(filtered, sortBy)
+  filtered = sortItems(filtered, sortBy, locale)
 
   if (limit !== null) {
     filtered = filtered.slice(0, limit)
@@ -207,17 +211,17 @@ function formatPublishedDate(value: string) {
   const hasValidDate = !Number.isNaN(date.getTime())
   const fallbackDate = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)))
   const formatterDate = hasValidDate ? date : fallbackDate
-  const datePart = new Intl.DateTimeFormat('uk-UA', {
+  const datePart = new Intl.DateTimeFormat(newsConfig.value.locale, {
     day: 'numeric',
     month: 'long',
     ...(Number(year) === latestYear.value ? {} : { year: 'numeric' as const }),
-    timeZone: 'Europe/Kyiv'
+    timeZone: newsConfig.value.contentTimeZone
   }).format(formatterDate)
-  const timeParts = new Intl.DateTimeFormat('uk-UA', {
+  const timeParts = new Intl.DateTimeFormat(newsConfig.value.locale, {
     hour: '2-digit',
     minute: '2-digit',
     hourCycle: 'h23',
-    timeZone: 'Europe/Kyiv'
+    timeZone: newsConfig.value.contentTimeZone
   }).formatToParts(formatterDate)
   const hour = timeParts.find((part) => part.type === 'hour')?.value ?? '00'
   const minute = timeParts.find((part) => part.type === 'minute')?.value ?? '00'
@@ -235,7 +239,7 @@ function formatPublishedDate(value: string) {
       <a :href="item.url" class="news-link">{{ item.title }}</a>
     </li>
   </ul>
-  <p v-else>Поки що новин немає.</p>
+  <p v-else>{{ newsConfig.labels.emptyState }}</p>
 </template>
 
 <style scoped>

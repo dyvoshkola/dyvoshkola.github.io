@@ -1,9 +1,14 @@
 import { defineConfig } from 'vitepress'
+import type { HeadConfig } from 'vitepress'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { toOpenGraphLocale } from './shared/i18n'
+import type { AppThemeConfig } from './theme/config'
 
 const siteUrl = 'https://dyvoshkola.github.io'
 const defaultOgImage = `${siteUrl}/logo-light.svg`
+const siteLocale = 'uk-UA'
+const contentTimeZone = 'Europe/Kyiv'
 
 function stripFrontmatter(source: string) {
   return source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '')
@@ -107,8 +112,109 @@ function extractFallbackMetadata(filePath: string, srcDir: string) {
   }
 }
 
+const themeConfig: AppThemeConfig = {
+  logo: {
+    light: '/logo-light.svg',
+    dark: '/logo-dark.svg',
+    alt: 'Дивошкола'
+  },
+  siteTitle: false,
+  outline: {
+    level: [1, 2],
+    label: 'На цій сторінці'
+  },
+  darkModeSwitchLabel: 'Тема',
+  lightModeSwitchTitle: 'Перемкнути на світлу тему',
+  darkModeSwitchTitle: 'Перемкнути на темну тему',
+  sidebarMenuLabel: 'Меню розділу',
+  returnToTopLabel: 'Повернутися догори',
+  langMenuLabel: 'Змінити мову',
+  skipToContentLabel: 'Перейти до вмісту',
+  docFooter: {
+    prev: false,
+    next: false
+  },
+  notFound: {
+    title: 'Сторінку не знайдено',
+    quote: 'Схоже, тут немає того, що ви шукали.',
+    linkLabel: 'Перейти на головну',
+    linkText: 'На головну',
+    code: '404'
+  },
+  contentTimeZone,
+  news: {
+    labels: {
+      emptyState: 'Поки що новин немає.',
+      referenceDayLink: 'Всі новини за {label}',
+      currentDayLink: 'Новини за {label}',
+      nextDayLink: 'Новини за {label}',
+      previousDayLink: 'Новини за {label}',
+      referenceMonthLink: 'Всі новини {label}',
+      currentMonthLink: 'Новини {label}',
+      nextMonthLink: 'Новини {label}',
+      previousMonthLink: 'Новини {label}',
+      referenceYearLink: 'Всі новини {label} року',
+      currentYearLink: 'Новини {label} року',
+      nextYearLink: 'Новини {label} року',
+      previousYearLink: 'Новини {label} року'
+    }
+  },
+  nav: [
+    {
+      text: 'Дивошкола',
+      activeMatch: '^/(|(index|team)(|\\.md|\\.html)|news(\\/.*)?)$',
+      items: [
+        { text: 'Про проект', link: '/index.html' },
+        { text: 'Команда', link: '/team.html' },
+        { text: 'Новини', link: '/news/', activeMatch: '^/news/' }
+      ]
+    },
+    {
+      text: 'Вузли',
+      activeMatch: '^/knots/',
+      items: [
+        { text: 'Вступ', link: '/knots/' },
+        { text: 'Огляд категорій', link: '/knots/categories/' },
+        { text: "З'єднувальні", link: '/knots/bends/' },
+        { text: 'Схоплювальні', link: '/knots/hitches/' },
+        { text: 'Петлі', link: '/knots/loops/' },
+        { text: 'Стопорні', link: '/knots/stopper/' },
+        { text: 'Рятувальні', link: '/knots/rescue/' },
+        { text: 'Теорія вузлів', link: '/knots/theory/' }
+      ]
+    }
+  ],
+  sidebar: {
+    '/': [
+      {
+        text: 'Дивошкола',
+        items: [
+          { text: 'Про проект', link: '/index.html' },
+          { text: 'Команда', link: '/team.html' },
+          { text: 'Новини', link: '/news/', activeMatch: '^/news(/.*)?$' }
+        ]
+      }
+    ],
+    '/knots/': [
+      {
+        text: 'Вузли',
+        items: [
+          { text: 'Вступ', link: '/knots/' },
+          { text: 'Огляд категорій', link: '/knots/categories/' },
+          { text: "З'єднувальні", link: '/knots/bends/' },
+          { text: 'Схоплювальні', link: '/knots/hitches/' },
+          { text: 'Петлі', link: '/knots/loops/' },
+          { text: 'Стопорні', link: '/knots/stopper/' },
+          { text: 'Рятувальні', link: '/knots/rescue/' },
+          { text: 'Теорія вузлів', link: '/knots/theory/' }
+        ]
+      }
+    ]
+  }
+}
+
 export default defineConfig({
-  lang: 'uk-UA',
+  lang: siteLocale,
   title: 'Дивошкола',
   description: 'Дивошкола — відкритий до експериментів освітній проект про корисні знання і навички. Ми прагнемо щодня дивувати й допомагати творити дива через навчання та практику.',
   transformPageData(pageData, ctx) {
@@ -128,7 +234,7 @@ export default defineConfig({
   },
   transformHead({ pageData }) {
     const frontmatter = pageData.frontmatter ?? {}
-    const head = []
+    const head: HeadConfig[] = []
     const title = pageData.title
     const description = pageData.description
     const keywords = Array.isArray(frontmatter.keywords)
@@ -154,7 +260,7 @@ export default defineConfig({
     head.push(['link', { rel: 'canonical', href: canonicalUrl }])
     head.push(['meta', { name: 'robots', content: robots }])
     head.push(['meta', { property: 'og:site_name', content: 'Дивошкола' }])
-    head.push(['meta', { property: 'og:locale', content: 'uk_UA' }])
+    head.push(['meta', { property: 'og:locale', content: toOpenGraphLocale(siteLocale) }])
     head.push(['meta', { property: 'og:type', content: ogType }])
     head.push(['meta', { property: 'og:url', content: canonicalUrl }])
     head.push(['meta', { property: 'og:image', content: imageUrl }])
@@ -184,108 +290,5 @@ export default defineConfig({
 
   base: '/',
 
-  themeConfig: {
-    logo: {
-      light: '/logo-light.svg',
-      dark: '/logo-dark.svg',
-      alt: 'Дивошкола'
-    },
-    siteTitle: false,
-    outline: {
-      level: [1, 2],
-      label: 'На цій сторінці'
-    },
-    darkModeSwitchLabel: 'Тема',
-    lightModeSwitchTitle: 'Перемкнути на світлу тему',
-    darkModeSwitchTitle: 'Перемкнути на темну тему',
-    sidebarMenuLabel: 'Меню розділу',
-    returnToTopLabel: 'Повернутися догори',
-    langMenuLabel: 'Змінити мову',
-    skipToContentLabel: 'Перейти до вмісту',
-    docFooter: {
-      prev: false,
-      next: false
-    },
-    notFound: {
-      title: 'Сторінку не знайдено',
-      quote: 'Схоже, тут немає того, що ви шукали.',
-      linkLabel: 'Перейти на головну',
-      linkText: 'На головну',
-      code: '404'
-    },
-
-    nav: [
-      {
-        text: 'Дивошкола',
-        activeMatch: '^/(|(index|team)(|\.md|\.html)|news(\/.*)?)$',
-        items: [
-          { text: 'Про проект', link: '/index.html' },
-          { text: 'Команда', link: '/team.html' },
-          { text: 'Новини', link: '/news/', activeMatch: '^/news/' }
-        ]
-      },
-      {
-        text: 'Вузли',
-        activeMatch: '^/knots/', 
-        items: [
-          { text: 'Вступ', link: '/knots/' },
-          { text: 'Огляд категорій', link: '/knots/categories/' },
-          { text: "З'єднувальні", link: '/knots/bends/' },
-          { text: 'Схоплювальні', link: '/knots/hitches/' },
-          { text: 'Петлі', link: '/knots/loops/' },
-          { text: 'Стопорні', link: '/knots/stopper/' },
-          { text: 'Рятувальні', link: '/knots/rescue/' },
-          { text: 'Теорія вузлів', link: '/knots/theory/' }
-        ]
-      }
-    ],
-    sidebar: {
-      '/': [
-        {
-          text: 'Дивошкола',
-          items: [
-            { text: 'Про проект', link: '/index.html' },
-            { text: 'Команда', link: '/team.html' },
-            { text: 'Новини', link: '/news/', activeMatch: '^/news(/.*)?$' }
-          ]
-        }
-      ],
-      '/knots/': [
-        {
-          text: 'Вузли',
-          items: [
-            { text: 'Вступ', link: '/knots/' },
-            { text: 'Огляд категорій', link: '/knots/categories/' },
-            { text: "З'єднувальні", link: '/knots/bends/'},
-            { text: 'Схоплювальні', link: '/knots/hitches/' },
-            { text: 'Петлі', link: '/knots/loops/' },
-            { text: 'Стопорні', link: '/knots/stopper/' },
-            { text: 'Рятувальні', link: '/knots/rescue/' },
-            { text: 'Теорія вузлів', link: '/knots/theory/' }
-          ]
-        }
-      ]
-    }
-    /*sidebar: [
-      {
-        text: 'Проєкт',
-        items: [
-          { text: 'Команда', link: '/team' }
-        ]
-      },
-      {
-        text: 'Вузли',
-        items: [
-          { text: 'Вступ', link: '/knots/' },
-          { text: 'Огляд категорій', link: '/knots/categories/' },
-          { text: "З'єднувальні", link: '/knots/bends/' },
-          { text: 'Схоплювальні', link: '/knots/hitches/' },
-          { text: 'Петлі', link: '/knots/loops/' },
-          { text: 'Стопорні', link: '/knots/stopper/' },
-          { text: 'Рятувальні', link: '/knots/rescue/' },
-          { text: 'Теорія вузлів', link: '/knots/theory/' }
-        ]
-      }
-    ]*/
-  }
+  themeConfig
 })

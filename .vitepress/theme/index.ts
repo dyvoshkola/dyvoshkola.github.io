@@ -1,19 +1,30 @@
 import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
-import Comments from './components/Comments.vue'
-import NewsArchiveLinks from './components/NewsArchiveLinks.vue'
+import Comments from '../features/comments/Comments.vue'
+import NewsArchiveLinks from '../features/news/NewsArchiveLinks.vue'
 import Layout from './components/Layout.vue'
-import NewsList from './components/NewsList.vue'
+import NewsList from '../features/news/NewsList.vue'
+import { defineComponent, h } from 'vue'
 import './custom.css'
+
+const ThemeLayout = defineComponent({
+  name: 'DyvoshkolaThemeLayout',
+  setup(_, { slots }) {
+    return () =>
+      h(Layout, null, {
+        ...slots,
+        'doc-after': () => [slots['doc-after']?.(), h(Comments)]
+      })
+  }
+})
 
 const theme: Theme = {
   extends: DefaultTheme,
   enhanceApp({ app }) {
-    app.component('Comments', Comments)
     app.component('NewsArchiveLinks', NewsArchiveLinks)
     app.component('NewsList', NewsList)
   },
-  Layout
+  Layout: ThemeLayout
 }
 
 export default theme

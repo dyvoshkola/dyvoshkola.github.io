@@ -1,11 +1,9 @@
 <script lang="ts" setup>
 import { useWindowScroll } from '@vueuse/core'
-import { onContentUpdated, useRoute } from 'vitepress'
+import { onContentUpdated, useData, useRoute } from 'vitepress'
+import { useLocalNav, useSidebar } from 'vitepress/theme'
 import { computed, onMounted, ref } from 'vue'
-import { useData } from 'vitepress/dist/client/theme-default/composables/data'
-import { useLocalNav } from 'vitepress/dist/client/theme-default/composables/local-nav'
 import { getHeaders } from 'vitepress/dist/client/theme-default/composables/outline'
-import { useSidebar } from 'vitepress/dist/client/theme-default/composables/sidebar'
 import VPLocalNavOutlineDropdown from 'vitepress/dist/client/theme-default/components/VPLocalNavOutlineDropdown.vue'
 
 defineProps<{

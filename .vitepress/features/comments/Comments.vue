@@ -2,10 +2,12 @@
 import Giscus from '@giscus/vue'
 import { computed } from 'vue'
 import { useData } from 'vitepress'
-import lightThemeCss from '../giscus/light-theme.css?raw'
-import darkThemeCss from '../giscus/dark-theme.css?raw'
+import lightThemeCss from './giscus-light-theme.css?raw'
+import darkThemeCss from './giscus-dark-theme.css?raw'
+import { useCommentsConfig } from './config'
 
 const { frontmatter, page, isDark } = useData()
+const commentsConfig = useCommentsConfig()
 const lightThemeUrl = `data:text/css;charset=utf-8,${encodeURIComponent(lightThemeCss)}`
 const darkThemeUrl = `data:text/css;charset=utf-8,${encodeURIComponent(darkThemeCss)}`
 
@@ -63,7 +65,7 @@ const giscusTheme = computed(() => {
         reactions-enabled="1"
         emit-metadata="0"
         input-position="bottom"
-        lang="uk"
+        :lang="commentsConfig.giscusLang"
         loading="lazy"
         crossorigin="anonymous"
         :theme="giscusTheme"

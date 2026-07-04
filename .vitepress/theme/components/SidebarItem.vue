@@ -1,40 +1,48 @@
 <script setup lang="ts">
-import type { DefaultTheme } from 'vitepress/theme'
+import { useData } from 'vitepress'
+import { VPLink } from 'vitepress/theme'
+import type { AppSidebarItem } from '../config'
 import { computed } from 'vue'
-import { useData } from 'vitepress/dist/client/theme-default/composables/data'
-import { isActive, normalize } from 'vitepress/dist/client/shared'
-import VPLink from 'vitepress/dist/client/theme-default/components/VPLink.vue'
-
-type SidebarItemWithActiveMatch = DefaultTheme.SidebarItem & {
-  activeMatch?: string
-  items?: SidebarItemWithActiveMatch[]
-}
 
 const props = defineProps<{
-  item: SidebarItemWithActiveMatch
+  item: AppSidebarItem
   depth: number
 }>()
 
 const { page } = useData()
 
-const currentPath = computed(() => normalize(`/${page.value.relativePath}`))
+function normalizePath(path: string) {
+  return decodeURI(path)
+    .replace(/[?#].*$/, '')
+    .replace(/(?:(^|\/)index)?\.(?:md|html)$/, '$1')
+}
 
-function isSidebarItemActive(item: SidebarItemWithActiveMatch) {
+function isPathActive(currentPath: string, matchPath: string | undefined) {
+  if (matchPath === undefined) {
+    return false
+  }
+
+  return normalizePath(matchPath) === normalizePath(`/${currentPath}`)
+}
+
+const currentPath = computed(() => normalizePath(`/${page.value.relativePath}`))
+
+function isSidebarItemActive(item: AppSidebarItem) {
   if (item.activeMatch) {
     return new RegExp(item.activeMatch).test(currentPath.value)
   }
 
-  return isActive(page.value.relativePath, item.link)
+  return isPathActive(page.value.relativePath, item.link)
 }
 
-function hasMatchingChild(items?: SidebarItemWithActiveMatch[]) {
-  return items?.some((item) => {
+function hasMatchingChild(items?: AppSidebarItem[]): boolean {
+  return (items?.some((item) => {
     if (isSidebarItemActive(item)) {
       return true
     }
 
     return hasMatchingChild(item.items)
-  }) ?? false
+  }) ?? false) as boolean
 }
 
 const collapsed = computed(() => !!(collapsible.value && props.item.collapsed))

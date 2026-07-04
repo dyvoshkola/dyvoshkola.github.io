@@ -1,19 +1,16 @@
 <script setup lang="ts">
 import { useRoute } from 'vitepress'
+import { useSidebar } from 'vitepress/theme'
 import { computed, provide, useSlots, watch } from 'vue'
 import VPBackdrop from 'vitepress/dist/client/theme-default/components/VPBackdrop.vue'
 import VPContent from 'vitepress/dist/client/theme-default/components/VPContent.vue'
 import VPFooter from 'vitepress/dist/client/theme-default/components/VPFooter.vue'
 import VPNav from 'vitepress/dist/client/theme-default/components/VPNav.vue'
 import VPSkipLink from 'vitepress/dist/client/theme-default/components/VPSkipLink.vue'
-import { useData } from 'vitepress/dist/client/theme-default/composables/data'
-import {
-  useCloseSidebarOnEscape,
-  useSidebar
-} from 'vitepress/dist/client/theme-default/composables/sidebar'
-import Comments from './Comments.vue'
+import { useData } from 'vitepress'
+import { useCloseSidebarOnEscape } from 'vitepress/dist/client/theme-default/composables/sidebar'
+import LocalNav from './LocalNav.vue'
 import Sidebar from './Sidebar.vue'
-import SectionLocalNav from './SectionLocalNav.vue'
 
 const {
   isOpen: isSidebarOpen,
@@ -51,7 +48,7 @@ provide('hero-image-slot-exists', heroImageSlotExists)
       <template #nav-screen-content-before><slot name="nav-screen-content-before" /></template>
       <template #nav-screen-content-after><slot name="nav-screen-content-after" /></template>
     </VPNav>
-    <SectionLocalNav :open="isSidebarOpen" @open-menu="openSidebar" />
+    <LocalNav :open="isSidebarOpen" @open-menu="openSidebar" />
 
     <Sidebar :open="isSidebarOpen">
       <template #sidebar-nav-before><slot name="sidebar-nav-before" /></template>
@@ -75,10 +72,7 @@ provide('hero-image-slot-exists', heroImageSlotExists)
 
       <template #doc-footer-before><slot name="doc-footer-before" /></template>
       <template #doc-before><slot name="doc-before" /></template>
-      <template #doc-after>
-        <slot name="doc-after" />
-        <Comments />
-      </template>
+      <template #doc-after><slot name="doc-after" /></template>
       <template #doc-top><slot name="doc-top" /></template>
       <template #doc-bottom><slot name="doc-bottom" /></template>
 

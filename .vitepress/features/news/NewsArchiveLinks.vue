@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { formatNewsLabel, useNewsConfig } from './config'
 
 type NewsEntry = {
   publishedAt: string
@@ -55,6 +56,8 @@ const props = defineProps<{
   hideCalendarMonthLinks?: boolean | string
 }>()
 
+const newsConfig = useNewsConfig()
+
 const pages = import.meta.glob('../../../news/**/*.md', {
   eager: true,
   import: '__pageData'
@@ -106,7 +109,7 @@ function matchesToDate(publishedAt: string, toDate: string) {
   return Number.isNaN(toTime) || Number.isNaN(itemTime) || itemTime <= toTime
 }
 
-function getKyivDateParts(value: Date | string) {
+function getDatePartsInTimeZone(value: Date | string) {
   const date = value instanceof Date ? value : new Date(value)
 
   if (Number.isNaN(date.getTime())) {
@@ -114,7 +117,7 @@ function getKyivDateParts(value: Date | string) {
   }
 
   const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Kyiv',
+    timeZone: newsConfig.value.contentTimeZone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
@@ -133,7 +136,7 @@ function getKyivDateParts(value: Date | string) {
 
 function formatMonthLabel(year: string, month: string) {
   const date = new Date(Date.UTC(Number(year), Number(month) - 1, 1))
-  const monthLabel = new Intl.DateTimeFormat('uk-UA', {
+  const monthLabel = new Intl.DateTimeFormat(newsConfig.value.locale, {
     month: 'long',
     timeZone: 'UTC'
   })
@@ -150,7 +153,7 @@ function formatMonthLabel(year: string, month: string) {
 
 function formatMonthLinkLabel(year: string, month: string) {
   const date = new Date(Date.UTC(Number(year), Number(month) - 1, 1))
-  const monthLabel = new Intl.DateTimeFormat('uk-UA', {
+  const monthLabel = new Intl.DateTimeFormat(newsConfig.value.locale, {
     day: 'numeric',
     month: 'long',
     timeZone: 'UTC'
@@ -164,7 +167,7 @@ function formatMonthLinkLabel(year: string, month: string) {
 
 function formatDayLinkLabel(year: string, month: string, day: string) {
   const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)))
-  const formatted = new Intl.DateTimeFormat('uk-UA', {
+  const formatted = new Intl.DateTimeFormat(newsConfig.value.locale, {
     day: 'numeric',
     month: 'long',
     timeZone: 'UTC'
@@ -257,7 +260,7 @@ function isDateKeyInRange(dateKey: string) {
 function buildMonthWeeks(year: string, month: string, newsDays: Set<string>) {
   const firstDay = new Date(Date.UTC(Number(year), Number(month) - 1, 1))
   const daysInMonth = new Date(Date.UTC(Number(year), Number(month), 0)).getUTCDate()
-  const firstWeekday = (firstDay.getUTCDay() + 6) % 7
+  const firstWeekday = (firstDay.getUTCDay() - newsConfig.value.weekFirstDay + 7) % 7
   const cells: CalendarMonth['weeks'][number] = []
 
   for (let index = 0; index < firstWeekday; index += 1) {
@@ -314,7 +317,7 @@ function buildMonthWeeks(year: string, month: string, newsDays: Set<string>) {
 const currentDate = ref<DateParts | null>(null)
 
 onMounted(() => {
-  currentDate.value = getKyivDateParts(new Date())
+  currentDate.value = getDatePartsInTimeZone(new Date())
 })
 
 const newsItems = computed(() => {
@@ -385,7 +388,7 @@ const referenceDayParts = computed(() => {
     return null
   }
 
-  return getKyivDateParts(referenceDate.value)
+  return getDatePartsInTimeZone(referenceDate.value)
 })
 
 const isDayArchivePage = computed(() => {
@@ -423,7 +426,7 @@ const hasNewsToday = computed(() => {
   }
 
   return filteredNewsItems.value.some((item) => {
-    const parts = getKyivDateParts(item.publishedAt)
+    const parts = getDatePartsInTimeZone(item.publishedAt)
 
     return (
       parts &&
@@ -440,7 +443,7 @@ const hasNewsThisMonth = computed(() => {
   }
 
   return filteredNewsItems.value.some((item) => {
-    const parts = getKyivDateParts(item.publishedAt)
+    const parts = getDatePartsInTimeZone(item.publishedAt)
 
     return (
       parts &&
@@ -479,7 +482,7 @@ const referenceMonthParts = computed(() => {
     return null
   }
 
-  return getKyivDateParts(referenceDate.value)
+  return getDatePartsInTimeZone(referenceDate.value)
 })
 
 const hasNewsReferenceMonth = computed(() => {
@@ -488,7 +491,7 @@ const hasNewsReferenceMonth = computed(() => {
   }
 
   return newsItems.value.some((item) => {
-    const parts = getKyivDateParts(item.publishedAt)
+    const parts = getDatePartsInTimeZone(item.publishedAt)
 
     return (
       parts &&
@@ -518,7 +521,7 @@ const previousDayParts = computed(() => {
   const date = new Date(referenceDate.value)
   date.setUTCDate(date.getUTCDate() - 1)
 
-  return getKyivDateParts(date)
+  return getDatePartsInTimeZone(date)
 })
 
 const nextDayParts = computed(() => {
@@ -529,7 +532,7 @@ const nextDayParts = computed(() => {
   const date = new Date(referenceDate.value)
   date.setUTCDate(date.getUTCDate() + 1)
 
-  return getKyivDateParts(date)
+  return getDatePartsInTimeZone(date)
 })
 
 function hasNewsForDay(parts: DateParts | null) {
@@ -538,7 +541,7 @@ function hasNewsForDay(parts: DateParts | null) {
   }
 
   return newsItems.value.some((item) => {
-    const itemParts = getKyivDateParts(item.publishedAt)
+    const itemParts = getDatePartsInTimeZone(item.publishedAt)
 
     return (
       itemParts &&
@@ -587,7 +590,7 @@ function shiftMonth(parts: Pick<DateParts, 'year' | 'month'> | null, delta: numb
 
   const date = new Date(Date.UTC(Number(parts.year), Number(parts.month) - 1 + delta, 1))
 
-  return getKyivDateParts(date)
+  return getDatePartsInTimeZone(date)
 }
 
 function hasNewsForMonth(parts: Pick<DateParts, 'year' | 'month'> | null) {
@@ -596,7 +599,7 @@ function hasNewsForMonth(parts: Pick<DateParts, 'year' | 'month'> | null) {
   }
 
   return newsItems.value.some((item) => {
-    const itemParts = getKyivDateParts(item.publishedAt)
+    const itemParts = getDatePartsInTimeZone(item.publishedAt)
 
     return itemParts && itemParts.year === parts.year && itemParts.month === parts.month
   })
@@ -923,7 +926,7 @@ const calendarMonths = computed<CalendarMonth[]>(() => {
   const monthNewsDays = new Map<string, Set<string>>()
 
   filteredNewsItems.value.forEach((item) => {
-    const parts = getKyivDateParts(item.publishedAt)
+    const parts = getDatePartsInTimeZone(item.publishedAt)
 
     if (!parts) {
       return
@@ -972,7 +975,7 @@ const calendarMonths = computed<CalendarMonth[]>(() => {
   return [...months.values()].sort((a, b) => a.key.localeCompare(b.key))
 })
 
-const weekdayLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд']
+const weekdayLabels = computed(() => newsConfig.value.weekdayLabels)
 </script>
 
 <template>
@@ -1011,40 +1014,40 @@ const weekdayLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд']
 
   <ul v-if="hasVisiblePeriodLinks">
     <li v-if="canShowReferenceDayLink">
-      <a :href="referenceDayLink">Всі новини за {{ referenceDayLabel }}</a>
+      <a :href="referenceDayLink">{{ formatNewsLabel(newsConfig.labels.referenceDayLink, referenceDayLabel) }}</a>
     </li>
     <li v-if="canShowTodayLink">
-      <a :href="todayLink">Новини за {{ todayLabel }}</a>
+      <a :href="todayLink">{{ formatNewsLabel(newsConfig.labels.currentDayLink, todayLabel) }}</a>
     </li>
     <li v-if="canShowNextDayLink">
-      <a :href="nextDayLink">Новини за {{ nextDayLabel }}</a>
+      <a :href="nextDayLink">{{ formatNewsLabel(newsConfig.labels.nextDayLink, nextDayLabel) }}</a>
     </li>
     <li v-if="canShowPreviousDayLink">
-      <a :href="previousDayLink">Новини за {{ previousDayLabel }}</a>
+      <a :href="previousDayLink">{{ formatNewsLabel(newsConfig.labels.previousDayLink, previousDayLabel) }}</a>
     </li>
     <li v-if="canShowReferenceMonthLink">
-      <a :href="referenceMonthLink">Всі новини {{ referenceMonthLabel }}</a>
+      <a :href="referenceMonthLink">{{ formatNewsLabel(newsConfig.labels.referenceMonthLink, referenceMonthLabel) }}</a>
     </li>
     <li v-if="canShowCurrentMonthLink">
-      <a :href="monthLink">Новини {{ monthLabel }}</a>
+      <a :href="monthLink">{{ formatNewsLabel(newsConfig.labels.currentMonthLink, monthLabel) }}</a>
     </li>
     <li v-if="canShowNextMonthLink">
-      <a :href="nextMonthLink">Новини {{ nextMonthLabel }}</a>
+      <a :href="nextMonthLink">{{ formatNewsLabel(newsConfig.labels.nextMonthLink, nextMonthLabel) }}</a>
     </li>
     <li v-if="canShowPreviousMonthLink">
-      <a :href="previousMonthLink">Новини {{ previousMonthLabel }}</a>
+      <a :href="previousMonthLink">{{ formatNewsLabel(newsConfig.labels.previousMonthLink, previousMonthLabel) }}</a>
     </li>
     <li v-if="canShowReferenceYearLink">
-      <a :href="referenceYearLink">Всі новини {{ referenceYearLabel }} року</a>
+      <a :href="referenceYearLink">{{ formatNewsLabel(newsConfig.labels.referenceYearLink, referenceYearLabel) }}</a>
     </li>
     <li v-if="canShowCurrentYearLink">
-      <a :href="currentYearLink">Новини {{ currentYearLabel }} року</a>
+      <a :href="currentYearLink">{{ formatNewsLabel(newsConfig.labels.currentYearLink, currentYearLabel) }}</a>
     </li>
     <li v-if="canShowNextYearLink">
-      <a :href="nextYearLink">Новини {{ nextYearLabel }} року</a>
+      <a :href="nextYearLink">{{ formatNewsLabel(newsConfig.labels.nextYearLink, nextYearLabel) }}</a>
     </li>
     <li v-if="canShowPreviousYearLink">
-      <a :href="previousYearLink">Новини {{ previousYearLabel }} року</a>
+      <a :href="previousYearLink">{{ formatNewsLabel(newsConfig.labels.previousYearLink, previousYearLabel) }}</a>
     </li>
   </ul>
 </template>

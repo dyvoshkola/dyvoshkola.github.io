@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { DefaultTheme } from 'vitepress/theme'
+import type { AppSidebarItem } from '../config'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import SidebarItem from './SidebarItem.vue'
 
 defineProps<{
-  items: DefaultTheme.SidebarItem[]
+  items: AppSidebarItem[]
 }>()
 
 const disableTransition = ref(true)

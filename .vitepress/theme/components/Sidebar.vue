@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { useScrollLock } from '@vueuse/core'
 import { inBrowser } from 'vitepress'
+import { useSidebar } from 'vitepress/theme'
 import { ref, watch } from 'vue'
-import { useSidebar } from 'vitepress/dist/client/theme-default/composables/sidebar'
 import SidebarGroup from './SidebarGroup.vue'
 
 const { sidebarGroups, hasSidebar } = useSidebar()
