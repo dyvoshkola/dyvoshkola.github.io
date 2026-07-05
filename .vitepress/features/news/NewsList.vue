@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useData } from 'vitepress'
 import { useNewsConfig } from './config'
 
 type NewsEntry = {
   title: string
   url: string
+  filePath: string
   publishedAt: string
   importance: number
+  tags: string[]
 }
 
 type PageDataLike = {
@@ -15,6 +18,7 @@ type PageDataLike = {
     title?: string
     publishedAt?: string
     importance?: number | string
+    tags?: string[] | string
   }
   filePath?: string
 }
@@ -30,9 +34,13 @@ const props = defineProps<{
   toDate?: string
   minImportance?: number | string
   sortBy?: string
+  tags?: string[] | string
+  exclude?: string[] | string
+  excludeCurrent?: boolean | string
 }>()
 
 const newsConfig = useNewsConfig()
+const { page } = useData()
 
 function normalizeImportance(value: number | string | undefined) {
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -44,6 +52,62 @@ function normalizeImportance(value: number | string | undefined) {
   }
 
   return 0
+}
+
+function normalizeTags(value: string[] | string | undefined) {
+  if (Array.isArray(value)) {
+    return value
+      .filter((tag): tag is string => typeof tag === 'string')
+      .map((tag) => tag.trim().toLowerCase())
+      .filter(Boolean)
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((tag) => tag.trim().toLowerCase())
+      .filter(Boolean)
+  }
+
+  return []
+}
+
+function normalizeStringList(value: string[] | string | undefined) {
+  if (Array.isArray(value)) {
+    return value
+      .filter((item): item is string => typeof item === 'string')
+      .map((item) => item.trim())
+      .filter(Boolean)
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean)
+  }
+
+  return []
+}
+
+function normalizeBoolean(value: boolean | string | undefined, fallback: boolean) {
+  if (typeof value === 'boolean') {
+    return value
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase()
+
+    if (normalized === 'true') {
+      return true
+    }
+
+    if (normalized === 'false') {
+      return false
+    }
+  }
+
+  return fallback
 }
 
 function compareValues(a: number | string, b: number | string, locale: string) {
@@ -111,8 +175,10 @@ const allItems = computed(() => {
         url: `/${filePath
           .replace(/(^|\/)index\.md$/i, '$1')
           .replace(/\.md$/i, '.html')}`,
+        filePath,
         publishedAt: publishedAt.trim(),
-        importance: normalizeImportance(page.frontmatter?.importance)
+        importance: normalizeImportance(page.frontmatter?.importance),
+        tags: normalizeTags(page.frontmatter?.tags)
       }
     })
     .filter((item): item is NewsEntry => item !== null)
@@ -165,8 +231,20 @@ const items = computed(() => {
   const minImportance = normalizeImportance(props.minImportance)
   const sortBy = props.sortBy ?? '-publishedAt'
   const locale = newsConfig.value.locale
+  const requestedTags = normalizeTags(props.tags)
+  const excludeCurrent = normalizeBoolean(props.excludeCurrent, true)
+  const excludedItems = new Set(normalizeStringList(props.exclude))
+  const currentFilePath = page.value.relativePath
 
   let filtered = allItems.value.filter((item) => {
+    if (excludeCurrent && currentFilePath && item.filePath === currentFilePath) {
+      return false
+    }
+
+    if (excludedItems.has(item.filePath) || excludedItems.has(item.url)) {
+      return false
+    }
+
     if (props.fromDate && !matchesFromDate(item, props.fromDate)) {
       return false
     }
@@ -176,6 +254,10 @@ const items = computed(() => {
     }
 
     if (item.importance < minImportance) {
+      return false
+    }
+
+    if (requestedTags.length && !requestedTags.some((tag) => item.tags.includes(tag))) {
       return false
     }
 

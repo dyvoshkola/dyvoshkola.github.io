@@ -3,6 +3,10 @@ title: Запускаємо розділ новин Дивошколи
 description: Дивошкола відкриває окремий розділ новин для анонсів, коротких повідомлень і щоденних оглядів подій.
 publishedAt: 2026-07-02T14:47:00+03:00
 importance: 100
+tags:
+  - site
+  - news
+  - announcements
 authors:
   - github: yuriyapostol
     name: Юрій Апостол
