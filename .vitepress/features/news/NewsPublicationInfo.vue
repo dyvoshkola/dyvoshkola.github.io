@@ -136,7 +136,7 @@ function statusClass(status: string) {
 
 .news-meta-badge-updating {
   border-color: color-mix(in srgb, #e0b24a 55%, var(--vp-c-divider));
-  background: color-mix(in srgb, #f6d77a 22%, transparent);
-  color: color-mix(in srgb, #9a6a00 78%, var(--vp-c-text-1));
+  background: color-mix(in srgb, #f6d77a 20%, transparent);
+  color: color-mix(in srgb, #ffa600 70%, var(--vp-c-text-1));
 }
 </style>

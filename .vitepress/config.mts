@@ -129,7 +129,7 @@ const themeConfig: AppThemeConfig = {
   },
   siteTitle: false,
   outline: {
-    level: [1, 2],
+    level: [1, 4],
     label: 'На цій сторінці'
   },
   darkModeSwitchLabel: 'Тема',

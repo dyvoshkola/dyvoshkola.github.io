@@ -1,9 +1,41 @@
 .VPNavBarTitle .logo {
+  background: transparent !important;
   height: 40px;
   position: relative;
   left: -7px;
 }
 
 .VPSidebarItem.level-0:not(.is-link) > .item > .text {
-  font-size: 12px;
+  margin-bottom: 4px;
+  padding: 0;
+  line-height: 32px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.VPDocAsideOutline .VPDocOutlineItem.nested {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.VPDocAsideOutline .outline-title {
+  margin-bottom: 4px;
+}
+
+.VPLocalNavOutlineDropdown .VPDocOutlineItem.nested {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.VPDocAsideOutline .outline-link {
+  padding-left: 0 !important;
+}
+
+.VPLocalNavOutlineDropdown .outline {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+.VPLocalNavOutlineDropdown .outline-link {
+  padding-left: 0 !important;
 }
