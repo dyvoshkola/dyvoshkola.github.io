@@ -6,10 +6,10 @@
 }
 
 .VPSidebarItem.level-0:not(.is-link) > .item > .text {
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   padding: 0;
   line-height: 32px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -19,7 +19,10 @@
 }
 
 .VPDocAsideOutline .outline-title {
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  line-height: 32px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .VPLocalNavOutlineDropdown .VPDocOutlineItem.nested {
