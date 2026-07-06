@@ -1,24 +1,31 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useData } from 'vitepress'
+import { computed, onMounted, ref } from 'vue'
+import { useData, useRoute } from 'vitepress'
+import NewsPublicationInfo from './NewsPublicationInfo.vue'
 import { useNewsConfig } from './config'
+import { normalizeNewsStatuses } from './utils'
 
 type NewsEntry = {
+  id: string
   title: string
   url: string
   filePath: string
   publishedAt: string
   importance: number
   tags: string[]
+  statuses: string[]
 }
 
 type PageDataLike = {
   title?: string
   frontmatter?: {
+    id?: string
     title?: string
     publishedAt?: string
     importance?: number | string
     tags?: string[] | string
+    status?: string
+    statuses?: string[] | string
   }
   filePath?: string
 }
@@ -40,7 +47,34 @@ const props = defineProps<{
 }>()
 
 const newsConfig = useNewsConfig()
-const { page } = useData()
+const { page, frontmatter } = useData()
+const route = useRoute()
+const currentBrowserPath = ref<string | null>(null)
+
+onMounted(() => {
+  const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href
+  currentBrowserPath.value = canonical ?? window.location.pathname
+})
+
+const currentId = computed(() => {
+  const frontmatterId = normalizeId(frontmatter.value?.id)
+
+  if (frontmatterId) {
+    return frontmatterId
+  }
+
+  const relativePath = page.value?.relativePath
+
+  if (typeof relativePath !== 'string' || !relativePath.trim()) {
+    return null
+  }
+
+  return relativePath
+    .replace(/(^|\/)index\.md$/i, '$1')
+    .replace(/\.md$/i, '')
+    .replace(/^\/+/, '')
+    .toLowerCase()
+})
 
 function normalizeImportance(value: number | string | undefined) {
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -110,6 +144,78 @@ function normalizeBoolean(value: boolean | string | undefined, fallback: boolean
   return fallback
 }
 
+function normalizeDateTimeValue(value: string | undefined) {
+  if (typeof value !== 'string') {
+    return null
+  }
+
+  const trimmed = value.trim()
+
+  if (!trimmed) {
+    return null
+  }
+
+  const timestamp = Date.parse(trimmed)
+
+  if (Number.isNaN(timestamp)) {
+    return trimmed
+  }
+
+  return new Date(timestamp).toISOString()
+}
+
+function normalizeId(value: string | undefined) {
+  if (typeof value !== 'string') {
+    return null
+  }
+
+  const trimmed = value.trim()
+
+  return trimmed ? trimmed : null
+}
+
+function normalizeNewsIdentifier(value: string | undefined) {
+  if (typeof value !== 'string') {
+    return null
+  }
+
+  const trimmed = value.trim()
+
+  if (!trimmed) {
+    return null
+  }
+
+  let normalized = trimmed
+
+  if (/^[a-z]+:\/\//i.test(normalized)) {
+    try {
+      normalized = new URL(normalized).pathname
+    } catch {
+      return trimmed
+    }
+  }
+
+  normalized = normalized.replace(/[?#].*$/, '')
+  normalized = normalized.replace(/\\/g, '/')
+  normalized = normalized.replace(/^\/+/, '/')
+
+  if (!normalized.startsWith('/')) {
+    normalized = `/${normalized}`
+  }
+
+  normalized = normalized
+    .replace(/\/index\.md$/i, '/')
+    .replace(/\.md$/i, '')
+    .replace(/\/index\.html$/i, '/')
+    .replace(/\.html$/i, '')
+
+  if (normalized.length > 1) {
+    normalized = normalized.replace(/\/+$/, '')
+  }
+
+  return normalized || '/'
+}
+
 function compareValues(a: number | string, b: number | string, locale: string) {
   if (typeof a === 'number' && typeof b === 'number') {
     return a - b
@@ -171,6 +277,7 @@ const allItems = computed(() => {
             : filePath
 
       return {
+        id: normalizeId(page.frontmatter?.id) ?? filePath,
         title,
         url: `/${filePath
           .replace(/(^|\/)index\.md$/i, '$1')
@@ -178,7 +285,11 @@ const allItems = computed(() => {
         filePath,
         publishedAt: publishedAt.trim(),
         importance: normalizeImportance(page.frontmatter?.importance),
-        tags: normalizeTags(page.frontmatter?.tags)
+        tags: normalizeTags(page.frontmatter?.tags),
+        statuses: [
+          ...normalizeNewsStatuses(page.frontmatter?.statuses),
+          ...normalizeNewsStatuses(page.frontmatter?.status)
+        ]
       }
     })
     .filter((item): item is NewsEntry => item !== null)
@@ -232,16 +343,62 @@ const items = computed(() => {
   const sortBy = props.sortBy ?? '-publishedAt'
   const locale = newsConfig.value.locale
   const requestedTags = normalizeTags(props.tags)
-  const excludeCurrent = normalizeBoolean(props.excludeCurrent, true)
-  const excludedItems = new Set(normalizeStringList(props.exclude))
-  const currentFilePath = page.value.relativePath
+  const excludeCurrent = normalizeBoolean(props.excludeCurrent, false)
+  const resolvedExcludeValues = [
+    ...(excludeCurrent && currentId.value ? [currentId.value] : []),
+    ...normalizeStringList(props.exclude)
+  ]
+  const excludedItems = new Set(
+    resolvedExcludeValues
+      .map((item) => normalizeNewsIdentifier(item))
+      .filter((item): item is string => item !== null)
+  )
+  const excludedIds = new Set(
+    resolvedExcludeValues
+      .map((item) => normalizeId(item))
+      .filter((item): item is string => item !== null)
+  )
+  const currentIdentifiers = new Set(
+    [currentBrowserPath.value, route.path, page.value.relativePath, page.value.filePath]
+      .filter((item): item is string => item !== null && item !== undefined)
+      .map((item) => normalizeNewsIdentifier(item))
+      .filter((item): item is string => item !== null)
+  )
+  const currentPublishedAt =
+    normalizeDateTimeValue(
+      typeof frontmatter.value.publishedAt === 'string' ? frontmatter.value.publishedAt : undefined
+    )
+  const currentTitle =
+    typeof frontmatter.value.title === 'string' && frontmatter.value.title.trim()
+      ? frontmatter.value.title.trim()
+      : typeof page.value.title === 'string' && page.value.title.trim()
+        ? page.value.title.trim()
+        : null
 
   let filtered = allItems.value.filter((item) => {
-    if (excludeCurrent && currentFilePath && item.filePath === currentFilePath) {
+    const itemIdentifiers = [
+      normalizeNewsIdentifier(item.filePath),
+      normalizeNewsIdentifier(item.url)
+    ].filter((item): item is string => item !== null)
+
+    if (excludedIds.has(item.id)) {
       return false
     }
 
-    if (excludedItems.has(item.filePath) || excludedItems.has(item.url)) {
+    if (excludeCurrent && itemIdentifiers.some((identifier) => currentIdentifiers.has(identifier))) {
+      return false
+    }
+
+    if (
+      excludeCurrent &&
+      currentPublishedAt &&
+      normalizeDateTimeValue(item.publishedAt) === currentPublishedAt &&
+      (!currentTitle || item.title === currentTitle)
+    ) {
+      return false
+    }
+
+    if (itemIdentifiers.some((identifier) => excludedItems.has(identifier))) {
       return false
     }
 
@@ -281,43 +438,20 @@ const latestYear = computed(() => {
   return years.length ? Math.max(...years) : null
 })
 
-function formatPublishedDate(value: string) {
-  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/)
-
-  if (!match) {
-    return value
-  }
-
-  const [, year, month, day] = match
-  const date = new Date(value)
-  const hasValidDate = !Number.isNaN(date.getTime())
-  const fallbackDate = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)))
-  const formatterDate = hasValidDate ? date : fallbackDate
-  const datePart = new Intl.DateTimeFormat(newsConfig.value.locale, {
-    day: 'numeric',
-    month: 'long',
-    ...(Number(year) === latestYear.value ? {} : { year: 'numeric' as const }),
-    timeZone: newsConfig.value.contentTimeZone
-  }).format(formatterDate)
-  const timeParts = new Intl.DateTimeFormat(newsConfig.value.locale, {
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-    timeZone: newsConfig.value.contentTimeZone
-  }).formatToParts(formatterDate)
-  const hour = timeParts.find((part) => part.type === 'hour')?.value ?? '00'
-  const minute = timeParts.find((part) => part.type === 'minute')?.value ?? '00'
-
-  return `${datePart}, ${hour}:${minute}`
+function shouldShowYear(value: string) {
+  return Number(value.slice(0, 4)) !== latestYear.value
 }
 </script>
 
 <template>
   <ul v-if="items.length" class="news-list">
     <li v-for="item in items" :key="item.url" class="news-list-item">
-      <time class="news-date" :datetime="item.publishedAt">
-        {{ formatPublishedDate(item.publishedAt) }}
-      </time>
+      <NewsPublicationInfo
+        :published-at="item.publishedAt"
+        :statuses="item.statuses"
+        :show-year="shouldShowYear(item.publishedAt)"
+        inline="true"
+      />
       <a :href="item.url" class="news-link">{{ item.title }}</a>
     </li>
   </ul>
@@ -336,20 +470,11 @@ function formatPublishedDate(value: string) {
   grid-template-columns: max-content minmax(0, 1fr);
   column-gap: 0.75rem;
   align-items: baseline;
-  padding: 0.4rem 0;
+  padding: 0.25rem 0;
 }
 
 .news-link {
   min-width: 0;
-  font-weight: 500;
-}
-
-.news-date {
-  flex-shrink: 0;
-  color: var(--vp-c-text-2);
-  font-size: 0.9rem;
-  line-height: 1.5;
-  white-space: nowrap;
 }
 
 @media (max-width: 640px) {
@@ -359,7 +484,8 @@ function formatPublishedDate(value: string) {
   }
 
   .news-link {
-    grid-row: 2;
+    order: 1;
   }
+
 }
 </style>

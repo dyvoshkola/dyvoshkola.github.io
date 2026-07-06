@@ -19,10 +19,11 @@ const fallbackId = computed(() => {
   }
 
   return relativePath
+    .replace(/(^|\/)index\.md$/i, '$1')
     .replace(/\.md$/i, '')
     .replace(/\/+/g, ':')
     .replace(/:+/g, ':')
-    .replace(/^:|:$/g, '')
+    .replace(/^:+/, '')
     .toLowerCase()
 })
 

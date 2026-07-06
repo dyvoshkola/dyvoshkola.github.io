@@ -112,6 +112,15 @@ function extractFallbackMetadata(filePath: string, srcDir: string) {
   }
 }
 
+function derivePageId(filePath: string) {
+  return filePath
+    .replace(/(^|\/)index\.md$/i, '$1')
+    .replace(/\.md$/i, '')
+    .replace(/\/+/g, '/')
+    .replace(/^\/+/, '')
+    .toLowerCase()
+}
+
 const themeConfig: AppThemeConfig = {
   logo: {
     light: '/logo-light.svg',
@@ -164,7 +173,7 @@ const themeConfig: AppThemeConfig = {
       text: 'Дивошкола',
       activeMatch: '^/(|(index|team)(|\\.md|\\.html)|news(\\/.*)?)$',
       items: [
-        { text: 'Про проект', link: '/index.html' },
+        { text: 'Стартова сторінка', link: '/index.html' },
         { text: 'Команда', link: '/team.html' },
         { text: 'Новини', link: '/news/', activeMatch: '^/news/' }
       ]
@@ -189,7 +198,7 @@ const themeConfig: AppThemeConfig = {
       {
         text: 'Дивошкола',
         items: [
-          { text: 'Про проект', link: '/index.html' },
+          { text: 'Стартова сторінка', link: '/index.html' },
           { text: 'Команда', link: '/team.html' },
           { text: 'Новини', link: '/news/', activeMatch: '^/news(/.*)?$' }
         ]
@@ -219,6 +228,7 @@ export default defineConfig({
   description: 'Дивошкола — відкритий до експериментів освітній проект про корисні знання і навички. Ми прагнемо щодня дивувати й допомагати творити дива через навчання та практику.',
   transformPageData(pageData, ctx) {
     const frontmatter = pageData.frontmatter ?? {}
+    const rawId = typeof frontmatter.id === 'string' ? frontmatter.id.trim() : ''
     const fallback = extractFallbackMetadata(pageData.filePath, ctx.siteConfig.srcDir)
     const title = typeof frontmatter.title === 'string' && frontmatter.title.trim()
       ? frontmatter.title.trim()
@@ -226,6 +236,11 @@ export default defineConfig({
     const description = typeof frontmatter.description === 'string' && frontmatter.description.trim()
       ? frontmatter.description.trim()
       : fallback.description
+
+    pageData.frontmatter = {
+      ...frontmatter,
+      id: rawId || derivePageId(pageData.filePath)
+    }
 
     return {
       ...(title ? { title } : {}),
