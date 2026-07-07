@@ -121,6 +121,27 @@ function derivePageId(filePath: string) {
     .toLowerCase()
 }
 
+function resolveKeywords(value: unknown) {
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((keyword) => keyword.trim())
+      .filter(Boolean)
+      .join(', ')
+  }
+
+  if (Array.isArray(value)) {
+    return [...new Set(
+      value
+        .filter((keyword): keyword is string => typeof keyword === 'string')
+        .map((keyword) => keyword.trim())
+        .filter(Boolean)
+    )].join(', ')
+  }
+
+  return ''
+}
+
 const themeConfig: AppThemeConfig = {
   logo: {
     light: '/logo-light.svg',
@@ -252,11 +273,7 @@ export default defineConfig({
     const head: HeadConfig[] = []
     const title = pageData.title
     const description = pageData.description
-    const keywords = Array.isArray(frontmatter.keywords)
-      ? frontmatter.keywords.join(', ')
-      : typeof frontmatter.keywords === 'string'
-        ? frontmatter.keywords.trim()
-        : ''
+    const keywords = resolveKeywords(frontmatter.keywords)
     const robots = typeof frontmatter.robots === 'string' && frontmatter.robots.trim()
       ? frontmatter.robots.trim()
       : 'index,follow'
