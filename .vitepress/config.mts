@@ -273,7 +273,7 @@ export default defineConfig({
     const head: HeadConfig[] = []
     const title = pageData.title
     const description = pageData.description
-    const keywords = resolveKeywords(frontmatter.keywords)
+    const keywords = resolveKeywords(frontmatter.keywords) || resolveKeywords(frontmatter.tags)
     const robots = typeof frontmatter.robots === 'string' && frontmatter.robots.trim()
       ? frontmatter.robots.trim()
       : 'index,follow'
