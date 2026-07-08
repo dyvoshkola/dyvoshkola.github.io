@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useData } from 'vitepress'
-import { normalizeNewsStatuses } from './utils'
+import { resolveNewsStatuses } from './utils'
 
 const props = defineProps<{
   status?: string
@@ -10,22 +10,9 @@ const props = defineProps<{
 
 const { frontmatter } = useData()
 
-const resolvedStatuses = computed(() => {
-  const hasExplicitStatuses = props.statuses !== undefined || props.status !== undefined
-  const explicitStatuses = [
-    ...normalizeNewsStatuses(props.statuses),
-    ...normalizeNewsStatuses(props.status)
-  ]
-
-  if (hasExplicitStatuses) {
-    return explicitStatuses
-  }
-
-  return [
-    ...normalizeNewsStatuses(frontmatter.value.statuses),
-    ...normalizeNewsStatuses(frontmatter.value.status)
-  ]
-})
+const resolvedStatuses = computed(() =>
+  resolveNewsStatuses(props.statuses, props.status, frontmatter.value.statuses, frontmatter.value.status)
+)
 
 function statusClass(status: string) {
   return status.trim().toLowerCase() === 'оновлюється' ? 'news-meta-badge-updating' : ''

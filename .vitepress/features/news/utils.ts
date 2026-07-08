@@ -1,3 +1,28 @@
+export type NewsAuthor = {
+  name: string
+  github?: string
+}
+
+export function normalizeBoolean(value: boolean | string | undefined, fallback: boolean) {
+  if (typeof value === 'boolean') {
+    return value
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase()
+
+    if (normalized === 'true') {
+      return true
+    }
+
+    if (normalized === 'false') {
+      return false
+    }
+  }
+
+  return fallback
+}
+
 export function normalizeNewsStatuses(value: string[] | string | undefined) {
   if (Array.isArray(value)) {
     return value
@@ -11,6 +36,83 @@ export function normalizeNewsStatuses(value: string[] | string | undefined) {
       .split(',')
       .map((status) => status.trim())
       .filter(Boolean)
+  }
+
+  return []
+}
+
+export function resolveNewsPublishedAt(explicitValue: string | undefined, frontmatterValue: unknown) {
+  if (typeof explicitValue === 'string' && explicitValue.trim()) {
+    return explicitValue.trim()
+  }
+
+  if (typeof frontmatterValue === 'string' && frontmatterValue.trim()) {
+    return frontmatterValue.trim()
+  }
+
+  return ''
+}
+
+export function resolveNewsStatuses(
+  explicitStatuses: string[] | string | undefined,
+  explicitStatus: string | undefined,
+  frontmatterStatuses: unknown,
+  frontmatterStatus: unknown
+) {
+  const hasExplicitStatuses = explicitStatuses !== undefined || explicitStatus !== undefined
+  const explicitValues = [
+    ...normalizeNewsStatuses(explicitStatuses),
+    ...normalizeNewsStatuses(explicitStatus)
+  ]
+
+  if (hasExplicitStatuses) {
+    return explicitValues
+  }
+
+  return [
+    ...normalizeNewsStatuses(
+      Array.isArray(frontmatterStatuses) || typeof frontmatterStatuses === 'string'
+        ? frontmatterStatuses
+        : undefined
+    ),
+    ...normalizeNewsStatuses(typeof frontmatterStatus === 'string' ? frontmatterStatus : undefined)
+  ]
+}
+
+export function normalizeNewsAuthors(
+  value: Array<string | { name?: string; github?: string }> | string | undefined
+) {
+  if (Array.isArray(value)) {
+    return value
+      .map((author): NewsAuthor | null => {
+        if (typeof author === 'string') {
+          const name = author.trim()
+
+          return name ? { name } : null
+        }
+
+        if (!author || typeof author !== 'object') {
+          return null
+        }
+
+        const name = typeof author.name === 'string' ? author.name.trim() : ''
+        const github = typeof author.github === 'string' ? author.github.trim() : ''
+
+        if (!name) {
+          return null
+        }
+
+        return github ? { name, github } : { name }
+      })
+      .filter((author): author is NewsAuthor => author !== null)
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((author) => author.trim())
+      .filter(Boolean)
+      .map((name) => ({ name }))
   }
 
   return []

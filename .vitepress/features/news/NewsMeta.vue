@@ -3,7 +3,7 @@ import { computed, useSlots } from 'vue'
 import { useData } from 'vitepress'
 import NewsMetaPublishedAt from './NewsMetaPublishedAt.vue'
 import NewsMetaStatuses from './NewsMetaStatuses.vue'
-import { normalizeNewsStatuses } from './utils'
+import { normalizeBoolean, resolveNewsPublishedAt, resolveNewsStatuses } from './utils'
 
 const props = defineProps<{
   publishedAt?: string
@@ -16,52 +16,21 @@ const props = defineProps<{
 const { frontmatter } = useData()
 const slots = useSlots()
 
-function normalizeBoolean(value: boolean | string | undefined, fallback: boolean) {
-  if (typeof value === 'boolean') {
-    return value
-  }
-
-  if (typeof value === 'string') {
-    const normalized = value.trim().toLowerCase()
-
-    if (normalized === 'true') {
-      return true
-    }
-
-    if (normalized === 'false') {
-      return false
-    }
-  }
-
-  return fallback
-}
-
 const inline = computed(() => normalizeBoolean(props.inline, false))
 
-const hasPublishedAt = computed(() => {
-  if (typeof props.publishedAt === 'string' && props.publishedAt.trim()) {
-    return true
-  }
+const hasPublishedAt = computed(() =>
+  Boolean(resolveNewsPublishedAt(props.publishedAt, frontmatter.value.publishedAt))
+)
 
-  return (
-    typeof frontmatter.value.publishedAt === 'string' && Boolean(frontmatter.value.publishedAt.trim())
-  )
-})
-
-const hasStatuses = computed(() => {
-  const hasExplicitStatuses = props.statuses !== undefined || props.status !== undefined
-
-  if (hasExplicitStatuses) {
-    return (
-      normalizeNewsStatuses(props.statuses).length > 0 || normalizeNewsStatuses(props.status).length > 0
-    )
-  }
-
-  return (
-    normalizeNewsStatuses(frontmatter.value.statuses).length > 0 ||
-    normalizeNewsStatuses(frontmatter.value.status).length > 0
-  )
-})
+const hasStatuses = computed(
+  () =>
+    resolveNewsStatuses(
+      props.statuses,
+      props.status,
+      frontmatter.value.statuses,
+      frontmatter.value.status
+    ).length > 0
+)
 
 const hasContent = computed(() => {
   if (slots.default) {

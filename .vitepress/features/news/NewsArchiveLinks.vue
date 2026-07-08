@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { formatNewsLabel, useNewsConfig } from './config'
+import { normalizeBoolean } from './utils'
 
 type NewsEntry = {
   publishedAt: string
@@ -62,26 +63,6 @@ const pages = import.meta.glob('../../../news/**/*.md', {
   eager: true,
   import: '__pageData'
 }) as Record<string, PageDataLike>
-
-function normalizeBoolean(value: boolean | string | undefined, fallback: boolean) {
-  if (typeof value === 'boolean') {
-    return value
-  }
-
-  if (typeof value === 'string') {
-    const normalized = value.trim().toLowerCase()
-
-    if (normalized === 'true') {
-      return true
-    }
-
-    if (normalized === 'false') {
-      return false
-    }
-  }
-
-  return fallback
-}
 
 function isDateOnly(value: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value)

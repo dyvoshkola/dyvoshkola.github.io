@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useData, useRoute } from 'vitepress'
 import NewsMeta from './NewsMeta.vue'
 import { useNewsConfig } from './config'
-import { normalizeNewsStatuses } from './utils'
+import { normalizeBoolean, normalizeNewsStatuses } from './utils'
 
 type NewsEntry = {
   id: string
@@ -122,26 +122,6 @@ function normalizeStringList(value: string[] | string | undefined) {
   }
 
   return []
-}
-
-function normalizeBoolean(value: boolean | string | undefined, fallback: boolean) {
-  if (typeof value === 'boolean') {
-    return value
-  }
-
-  if (typeof value === 'string') {
-    const normalized = value.trim().toLowerCase()
-
-    if (normalized === 'true') {
-      return true
-    }
-
-    if (normalized === 'false') {
-      return false
-    }
-  }
-
-  return fallback
 }
 
 function normalizeDateTimeValue(value: string | undefined) {
