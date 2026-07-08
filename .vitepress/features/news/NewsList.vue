@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useData, useRoute } from 'vitepress'
-import NewsPublicationInfo from './NewsPublicationInfo.vue'
+import NewsMeta from './NewsMeta.vue'
 import { useNewsConfig } from './config'
 import { normalizeNewsStatuses } from './utils'
 
@@ -446,7 +446,7 @@ function shouldShowYear(value: string) {
 <template>
   <ul v-if="items.length" class="news-list">
     <li v-for="item in items" :key="item.url" class="news-list-item">
-      <NewsPublicationInfo
+      <NewsMeta
         :published-at="item.publishedAt"
         :statuses="item.statuses"
         :show-year="shouldShowYear(item.publishedAt)"

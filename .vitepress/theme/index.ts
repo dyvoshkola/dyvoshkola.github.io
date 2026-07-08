@@ -2,7 +2,10 @@ import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
 import Comments from '../features/comments/Comments.vue'
 import NewsArchiveLinks from '../features/news/NewsArchiveLinks.vue'
-import NewsPublicationInfo from '../features/news/NewsPublicationInfo.vue'
+import NewsMeta from '../features/news/NewsMeta.vue'
+import NewsMetaAuthors from '../features/news/NewsMetaAuthors.vue'
+import NewsMetaPublishedAt from '../features/news/NewsMetaPublishedAt.vue'
+import NewsMetaStatuses from '../features/news/NewsMetaStatuses.vue'
 import Layout from './components/Layout.vue'
 import NewsList from '../features/news/NewsList.vue'
 import { defineComponent, h } from 'vue'
@@ -24,7 +27,10 @@ const theme: Theme = {
   enhanceApp({ app }) {
     app.component('NewsArchiveLinks', NewsArchiveLinks)
     app.component('NewsList', NewsList)
-    app.component('NewsPublicationInfo', NewsPublicationInfo)
+    app.component('NewsMeta', NewsMeta)
+    app.component('NewsMetaAuthors', NewsMetaAuthors)
+    app.component('NewsMetaPublishedAt', NewsMetaPublishedAt)
+    app.component('NewsMetaStatuses', NewsMetaStatuses)
   },
   Layout: ThemeLayout
 }
