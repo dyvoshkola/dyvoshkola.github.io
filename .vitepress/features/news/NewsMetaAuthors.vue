@@ -92,6 +92,7 @@ function authorAvatarUrl(author: NewsAuthor) {
 .news-meta-author-avatar {
   width: 30px;
   height: 30px;
+  border: 1px solid var(--vp-c-divider);
   border-radius: 50%;
   flex: 0 0 auto;
 }
