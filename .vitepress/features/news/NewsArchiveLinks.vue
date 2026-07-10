@@ -25,12 +25,12 @@ type CalendarMonth = {
   year: string
   month: string
   label: string
-  link: string | null
+  link?: string
   weeks: Array<
     Array<{
       key: string
       day: string
-      link: string | null
+      link?: string
       isCurrentMonth: boolean
       hasNews: boolean
       isInRange: boolean
@@ -159,7 +159,7 @@ function formatDayLinkLabel(year: string, month: string, day: string) {
 
 function buildDayLink(parts: DateParts | null) {
   if (!parts) {
-    return null
+    return undefined
   }
 
   return `/news/${parts.year}/${parts.month}/${parts.day}/`
@@ -167,14 +167,14 @@ function buildDayLink(parts: DateParts | null) {
 
 function buildMonthLink(parts: Pick<DateParts, 'year' | 'month'> | null) {
   if (!parts) {
-    return null
+    return undefined
   }
 
   return `/news/${parts.year}/${parts.month}/`
 }
 
 function buildYearLink(year: string | null) {
-  return year ? `/news/${year}/` : null
+  return year ? `/news/${year}/` : undefined
 }
 
 function isSameDayParts(a: DateParts | null, b: DateParts | null) {
@@ -249,7 +249,7 @@ function buildMonthWeeks(year: string, month: string, newsDays: Set<string>) {
     cells.push({
       key: formatDateKey(date),
       day: '',
-      link: null,
+      link: undefined,
       isCurrentMonth: false,
       hasNews: false,
       isInRange: false
@@ -265,7 +265,7 @@ function buildMonthWeeks(year: string, month: string, newsDays: Set<string>) {
     cells.push({
       key: dateKey,
       day: String(day),
-      link: hasNews && isInRange ? `/news/${year}/${month}/${String(day).padStart(2, '0')}/` : null,
+      link: hasNews && isInRange ? `/news/${year}/${month}/${String(day).padStart(2, '0')}/` : undefined,
       isCurrentMonth: true,
       hasNews,
       isInRange
@@ -279,7 +279,7 @@ function buildMonthWeeks(year: string, month: string, newsDays: Set<string>) {
     cells.push({
       key: formatDateKey(date),
       day: '',
-      link: null,
+      link: undefined,
       isCurrentMonth: false,
       hasNews: false,
       isInRange: false
@@ -382,27 +382,33 @@ const isDayArchivePage = computed(() => {
 })
 
 const isMonthArchivePage = computed(() => {
-  if (!props.fromDate || !props.toDate || !referenceMonthParts.value) {
+  const referenceMonth = referenceMonthParts.value
+
+  if (!props.fromDate || !props.toDate || !referenceMonth) {
     return false
   }
 
-  const bounds = getMonthBounds(referenceMonthParts.value.year, referenceMonthParts.value.month)
+  const bounds = getMonthBounds(referenceMonth.year, referenceMonth.month)
 
   return props.fromDate.slice(0, 10) === bounds.from && props.toDate.slice(0, 10) === bounds.to
 })
 
 const isYearArchivePage = computed(() => {
-  if (!props.fromDate || !props.toDate || !referenceMonthParts.value) {
+  const referenceMonth = referenceMonthParts.value
+
+  if (!props.fromDate || !props.toDate || !referenceMonth) {
     return false
   }
 
-  const bounds = getYearBounds(referenceMonthParts.value.year)
+  const bounds = getYearBounds(referenceMonth.year)
 
   return props.fromDate.slice(0, 10) === bounds.from && props.toDate.slice(0, 10) === bounds.to
 })
 
 const hasNewsToday = computed(() => {
-  if (!currentDate.value) {
+  const current = currentDate.value
+
+  if (!current) {
     return false
   }
 
@@ -411,15 +417,17 @@ const hasNewsToday = computed(() => {
 
     return (
       parts &&
-      parts.year === currentDate.value.year &&
-      parts.month === currentDate.value.month &&
-      parts.day === currentDate.value.day
+      parts.year === current.year &&
+      parts.month === current.month &&
+      parts.day === current.day
     )
   })
 })
 
 const hasNewsThisMonth = computed(() => {
-  if (!currentDate.value) {
+  const current = currentDate.value
+
+  if (!current) {
     return false
   }
 
@@ -428,8 +436,8 @@ const hasNewsThisMonth = computed(() => {
 
     return (
       parts &&
-      parts.year === currentDate.value.year &&
-      parts.month === currentDate.value.month
+      parts.year === current.year &&
+      parts.month === current.month
     )
   })
 })
@@ -467,7 +475,9 @@ const referenceMonthParts = computed(() => {
 })
 
 const hasNewsReferenceMonth = computed(() => {
-  if (!referenceMonthParts.value) {
+  const referenceMonth = referenceMonthParts.value
+
+  if (!referenceMonth) {
     return false
   }
 
@@ -476,8 +486,8 @@ const hasNewsReferenceMonth = computed(() => {
 
     return (
       parts &&
-      parts.year === referenceMonthParts.value.year &&
-      parts.month === referenceMonthParts.value.month
+      parts.year === referenceMonth.year &&
+      parts.month === referenceMonth.month
     )
   })
 })
@@ -487,11 +497,13 @@ const referenceMonthLink = computed(() => {
 })
 
 const referenceMonthLabel = computed(() => {
-  if (!referenceMonthParts.value) {
+  const referenceMonth = referenceMonthParts.value
+
+  if (!referenceMonth) {
     return null
   }
 
-  return formatMonthLinkLabel(referenceMonthParts.value.year, referenceMonthParts.value.month)
+  return formatMonthLinkLabel(referenceMonth.year, referenceMonth.month)
 })
 
 const previousDayParts = computed(() => {
@@ -948,7 +960,7 @@ const calendarMonths = computed<CalendarMonth[]>(() => {
       year,
       month,
       label: formatMonthLabel(year, month),
-      link: (monthNewsDays.get(monthKey)?.size ?? 0) > 0 ? `/news/${year}/${month}/` : null,
+      link: (monthNewsDays.get(monthKey)?.size ?? 0) > 0 ? `/news/${year}/${month}/` : undefined,
       weeks: buildMonthWeeks(year, month, monthNewsDays.get(monthKey) ?? new Set<string>())
     })
   })

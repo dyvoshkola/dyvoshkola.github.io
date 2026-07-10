@@ -10,7 +10,7 @@ const props = defineProps<{
 
 const { frontmatter } = useData()
 
-const resolvedAuthors = computed(() => {
+const resolvedAuthors = computed<NewsAuthor[]>(() => {
   if (props.authors !== undefined) {
     return normalizeNewsAuthors(props.authors)
   }
@@ -81,7 +81,7 @@ function authorAvatarUrl(author: NewsAuthor) {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  color: inherit;
+  /*color: inherit;*/
   font-size: 0.95rem;
 }
 
@@ -92,12 +92,13 @@ function authorAvatarUrl(author: NewsAuthor) {
 .news-meta-author-avatar {
   width: 30px;
   height: 30px;
-  border: 1px solid var(--vp-c-divider);
+  background-color: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
   border-radius: 50%;
   flex: 0 0 auto;
 }
 
 .news-meta-author-name {
-  color: var(--vp-c-text-2);
+  /*color: var(--vp-c-text-2);*/
 }
 </style>

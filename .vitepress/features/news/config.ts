@@ -52,8 +52,8 @@ function normalizeWeekFirstDay(value: number | undefined) {
     : null
 }
 
-export function formatNewsLabel(template: string, label: string) {
-  return template.replaceAll('{label}', label)
+export function formatNewsLabel(template: string, label: string | null | undefined) {
+  return template.replaceAll('{label}', label ?? '')
 }
 
 export function useNewsConfig() {
