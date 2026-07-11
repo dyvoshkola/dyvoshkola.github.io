@@ -1,3 +1,19 @@
+:root {
+  --site-link-color: #2b50c9;
+  --site-link-hover-color: #4b75ff;
+  --site-link-active-color: #2c49a5;
+
+  --vp-c-brand-1: var(--site-link-color);
+  --vp-c-brand-2: var(--site-link-hover-color);
+  --vp-c-brand-3: var(--site-link-active-color);
+}
+
+.dark {
+  --site-link-color: #a8bfff;
+  --site-link-hover-color: #c0d1ff;
+  --site-link-active-color: #8fa8ff;
+}
+
 .VPNavBarTitle .logo {
   background: transparent !important;
   height: 40px;
