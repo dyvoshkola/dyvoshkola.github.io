@@ -13,6 +13,6 @@ comments: false
 
 # Команда Дивошколи
 
-<a href="https://github.com/yuriyapostol" style="display:flex;align-items:center;flex-wrap:wrap;gap:.3em"><img src="https://github.com/yuriyapostol.png?size=40" alt="@yuriyapostol" style="width:30px;height:30px;background-color:var(--vp-c-bg-soft);border:1px solid var(--vp-c-border);border-radius:50%"> Юрій Апостол</a>
+<UserIdentity name="Юрій Апостол" github="yuriyapostol" />
 
-<a href="https://github.com/mykhailoapostol" style="display:flex;align-items:center;flex-wrap:wrap;gap:.3em"><img src="https://github.com/mykhailoapostol.png?size=40" alt="@mykhailoapostol" style="width:30px;height:30px;background-color:var(--vp-c-bg-soft);border:1px solid var(--vp-c-border);border-radius:50%"> Михайло Апостол</a>
+<UserIdentity name="Михайло Апостол" github="mykhailoapostol" />
