@@ -6,6 +6,7 @@ import NewsMeta from '../features/news/NewsMeta.vue'
 import NewsMetaAuthors from '../features/news/NewsMetaAuthors.vue'
 import NewsMetaPublishedAt from '../features/news/NewsMetaPublishedAt.vue'
 import NewsMetaStatuses from '../features/news/NewsMetaStatuses.vue'
+import DyvoBadge from './components/DyvoBadge.vue'
 import Layout from './components/Layout.vue'
 import NewsList from '../features/news/NewsList.vue'
 import UserIdentity from './components/UserIdentity.vue'
@@ -26,6 +27,7 @@ const ThemeLayout = defineComponent({
 const theme: Theme = {
   extends: DefaultTheme,
   enhanceApp({ app }) {
+    app.component('DyvoBadge', DyvoBadge)
     app.component('NewsArchiveLinks', NewsArchiveLinks)
     app.component('NewsList', NewsList)
     app.component('NewsMeta', NewsMeta)
