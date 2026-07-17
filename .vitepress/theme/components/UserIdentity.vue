@@ -81,10 +81,11 @@ const avatarSize = computed(() => {
 
 <style scoped>
 .user-identity {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 0.45rem;
+  width: fit-content;
   font-size: 0.95rem;
 }
 
