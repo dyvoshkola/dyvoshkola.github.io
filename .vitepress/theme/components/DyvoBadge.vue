@@ -1,20 +1,35 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
+import { normalizeClass } from 'vue'
 
-type DyvoBadgeType =
+defineOptions({
+  inheritAttrs: false
+})
+
+type DyvoBadgeColor =
   | 'info'
   | 'tip'
   | 'warning'
   | 'danger'
   | 'success'
-  | 'neutral'
-  | 'brand'
+
+type DyvoBadgeVariant = 'soft' | 'solid' | 'outline' | 'plain'
 
 type DyvoBadgeSize = 'xs' | 'sm' | 'md' | 'lg'
 
+type DyvoBadgeState = 'interactive' | 'disabled'
+
+const badgeColors = ['info', 'tip', 'warning', 'danger', 'success'] as const
+const badgeVariants = ['soft', 'solid', 'outline', 'plain'] as const
+const badgeSizes = ['xs', 'sm', 'md', 'lg'] as const
+const badgeStates = ['interactive', 'disabled'] as const
+
+const attrs = useAttrs()
+
 const props = withDefaults(defineProps<{
   text?: string
-  type?: DyvoBadgeType
+  color?: DyvoBadgeColor
+  variant?: DyvoBadgeVariant
   size?: DyvoBadgeSize
   icon?: string
   href?: string
@@ -22,7 +37,8 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
 }>(), {
   text: '',
-  type: 'tip',
+  color: 'tip',
+  variant: 'soft',
   size: 'md',
   icon: '',
   href: undefined,
@@ -30,8 +46,53 @@ const props = withDefaults(defineProps<{
   disabled: false
 })
 
+const classTokens = computed(() => {
+  const raw = normalizeClass(attrs.class)
+  return raw
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter(Boolean)
+})
+
+const classColor = computed(() => (
+  classTokens.value.find((token): token is DyvoBadgeColor => (
+    (badgeColors as readonly string[]).includes(token)
+  ))
+))
+
+const classVariant = computed(() => (
+  classTokens.value.find((token): token is DyvoBadgeVariant => (
+    (badgeVariants as readonly string[]).includes(token)
+  ))
+))
+
+const classSize = computed(() => (
+  classTokens.value.find((token): token is DyvoBadgeSize => (
+    (badgeSizes as readonly string[]).includes(token)
+  ))
+))
+
+const classStates = computed(() => (
+  classTokens.value.filter((token): token is DyvoBadgeState => (
+    (badgeStates as readonly string[]).includes(token)
+  ))
+))
+
+const resolvedColor = computed(() => classColor.value ?? props.color)
+const resolvedVariant = computed(() => classVariant.value ?? props.variant)
+const resolvedSize = computed(() => classSize.value ?? props.size)
+const resolvedDisabled = computed(() => (
+  classStates.value.includes('disabled') || props.disabled
+))
+const forcedInteractive = computed(() => classStates.value.includes('interactive'))
+
+const forwardedAttrs = computed(() => {
+  const { class: _class, ...rest } = attrs
+  return rest
+})
+
 const tagName = computed(() => {
-  if (props.href && !props.disabled) {
+  if (props.href && !resolvedDisabled.value) {
     return 'a'
   }
 
@@ -39,38 +100,38 @@ const tagName = computed(() => {
 })
 
 const isInteractive = computed(() => (
-  (Boolean(props.href) || props.clickable) && !props.disabled
+  (Boolean(props.href) || props.clickable || forcedInteractive.value) && !resolvedDisabled.value
 ))
 </script>
 
 <template>
   <component
     :is="tagName"
-    class="DyvoBadge"
+    v-bind="forwardedAttrs"
+    class="dyvo-badge"
     :class="[
-      type,
-      `DyvoBadge--${type}`,
-      `DyvoBadge--${size}`,
+      resolvedColor,
+      resolvedVariant,
+      resolvedSize,
       {
-        small: size === 'sm',
-        'DyvoBadge--interactive': isInteractive,
-        'DyvoBadge--disabled': disabled
+        interactive: isInteractive,
+        disabled: resolvedDisabled
       }
     ]"
     :href="tagName === 'a' ? href : undefined"
-    :aria-disabled="disabled || undefined"
+    :aria-disabled="resolvedDisabled || undefined"
   >
-    <span v-if="icon || $slots.icon" class="DyvoBadge__icon" aria-hidden="true">
+    <span v-if="icon || $slots.icon" class="dyvo-badge-icon" aria-hidden="true">
       <slot name="icon">{{ icon }}</slot>
     </span>
-    <span class="DyvoBadge__label">
+    <span class="dyvo-badge-label">
       <slot>{{ text }}</slot>
     </span>
   </component>
 </template>
 
 <style>
-.DyvoBadge {
+.dyvo-badge {
   display: inline-flex;
   align-items: center;
   gap: var(--dyvo-badge-gap, 6px);
@@ -85,138 +146,197 @@ const isInteractive = computed(() => (
   text-decoration: none;
   white-space: nowrap;
   vertical-align: baseline;
+  border-color: var(--dyvo-badge-border-color, transparent);
+  color: var(--dyvo-badge-text-color, var(--vp-c-text-2));
+  background-color: var(--dyvo-badge-bg-color, transparent);
 }
 
-.DyvoBadge.small,
-.DyvoBadge--sm {
+.dyvo-badge.sm {
   padding: var(--dyvo-badge-small-padding-y, 0) var(--dyvo-badge-small-padding-x, 6px);
   line-height: var(--dyvo-badge-small-line-height, 18px);
   font-size: var(--dyvo-badge-small-font-size, 10px);
   transform: translateY(var(--dyvo-badge-small-translate-y, -8px));
 }
 
-.DyvoBadge--xs {
+.dyvo-badge.xs {
   padding: var(--dyvo-badge-xs-padding-y, 0) var(--dyvo-badge-xs-padding-x, 4px);
   line-height: var(--dyvo-badge-xs-line-height, 16px);
   font-size: var(--dyvo-badge-xs-font-size, 9px);
   transform: translateY(var(--dyvo-badge-xs-translate-y, -8px));
 }
 
-.DyvoBadge--md {
+.dyvo-badge.md {
   padding: var(--dyvo-badge-padding-y, 0) var(--dyvo-badge-padding-x, 10px);
   line-height: var(--dyvo-badge-line-height, 22px);
   font-size: var(--dyvo-badge-font-size, 12px);
   transform: translateY(var(--dyvo-badge-translate-y, -2px));
 }
 
-.DyvoBadge--lg {
+.dyvo-badge.lg {
   padding: var(--dyvo-badge-lg-padding-y, 0) var(--dyvo-badge-lg-padding-x, 12px);
   line-height: var(--dyvo-badge-lg-line-height, 26px);
   font-size: var(--dyvo-badge-lg-font-size, var(--vp-custom-block-font-size, 14px));
   transform: translateY(var(--dyvo-badge-lg-translate-y, -2px));
 }
 
-.DyvoBadge--interactive {
+.dyvo-badge.interactive {
   cursor: pointer;
   transition:
     opacity var(--dyvo-badge-transition-duration, 0.15s) ease,
     box-shadow var(--dyvo-badge-transition-duration, 0.15s) ease;
 }
 
-.DyvoBadge--interactive:hover {
+.dyvo-badge.interactive:hover {
   opacity: var(--dyvo-badge-hover-opacity, 0.92);
 }
 
-.DyvoBadge--interactive:focus-visible {
+.dyvo-badge.interactive:focus-visible {
   outline: var(--dyvo-badge-focus-outline-width, 2px) solid var(--dyvo-badge-focus-outline-color, var(--vp-c-brand-1));
   outline-offset: var(--dyvo-badge-focus-outline-offset, 2px);
 }
 
-.DyvoBadge--disabled {
+.dyvo-badge.disabled {
   cursor: not-allowed;
   opacity: var(--dyvo-badge-disabled-opacity, 0.55);
 }
 
-.DyvoBadge__icon {
+.dyvo-badge-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   line-height: var(--dyvo-badge-icon-line-height, 1);
 }
 
-.DyvoBadge__label {
+.dyvo-badge-label {
   display: inline-flex;
   align-items: center;
 }
 
-.DyvoBadge.info,
-.DyvoBadge--info {
-  border-color: var(--dyvo-badge-info-border, var(--vp-badge-info-border, transparent));
-  color: var(--dyvo-badge-info-text, var(--vp-badge-info-text, var(--vp-c-text-2)));
-  background-color: var(--dyvo-badge-info-bg, var(--vp-badge-info-bg, var(--vp-c-default-soft)));
+.dyvo-badge.soft {
+  --dyvo-badge-text-color: var(--dyvo-badge-soft-text-color, var(--vp-c-text-2));
+  --dyvo-badge-bg-color: var(--dyvo-badge-soft-bg-color, transparent);
+  --dyvo-badge-border-color: var(--dyvo-badge-soft-border-color, transparent);
 }
 
-.DyvoBadge.tip,
-.DyvoBadge--tip {
-  border-color: var(--dyvo-badge-tip-border, var(--vp-badge-tip-border, transparent));
-  color: var(--dyvo-badge-tip-text, var(--vp-badge-tip-text, var(--vp-c-tip-1)));
-  background-color: var(--dyvo-badge-tip-bg, var(--vp-badge-tip-bg, var(--vp-c-tip-soft)));
+.dyvo-badge.solid {
+  --dyvo-badge-text-color: var(--dyvo-badge-solid-text-color, var(--vp-c-bg));
+  --dyvo-badge-bg-color: var(--dyvo-badge-solid-bg-color, var(--vp-c-text-2));
+  --dyvo-badge-border-color: var(--dyvo-badge-solid-border-color, var(--dyvo-badge-solid-bg-color, transparent));
 }
 
-.DyvoBadge.warning,
-.DyvoBadge--warning {
-  border-color: var(--dyvo-badge-warning-border, var(--vp-badge-warning-border, transparent));
-  color: var(--dyvo-badge-warning-text, var(--vp-badge-warning-text, var(--vp-c-warning-1)));
-  background-color: var(--dyvo-badge-warning-bg, var(--vp-badge-warning-bg, var(--vp-c-warning-soft)));
+.dyvo-badge.outline {
+  --dyvo-badge-text-color: var(--dyvo-badge-outline-text-color, var(--vp-c-text-2));
+  --dyvo-badge-bg-color: var(--dyvo-badge-outline-bg-color, transparent);
+  --dyvo-badge-border-color: var(--dyvo-badge-outline-border-color, var(--dyvo-badge-outline-text-color, transparent));
 }
 
-.DyvoBadge.danger,
-.DyvoBadge--danger {
-  border-color: var(--dyvo-badge-danger-border, var(--vp-badge-danger-border, transparent));
-  color: var(--dyvo-badge-danger-text, var(--vp-badge-danger-text, var(--vp-c-danger-1)));
-  background-color: var(--dyvo-badge-danger-bg, var(--vp-badge-danger-bg, var(--vp-c-danger-soft)));
+.dyvo-badge.plain {
+  margin-left: 0;
+  border-width: 0;
+  padding: 0;
+  transform: none;
+  --dyvo-badge-text-color: var(--dyvo-badge-plain-text-color, var(--vp-c-text-2));
+  --dyvo-badge-bg-color: var(--dyvo-badge-plain-bg-color, transparent);
+  --dyvo-badge-border-color: var(--dyvo-badge-plain-border-color, transparent);
 }
 
-.DyvoBadge--success {
-  border-color: var(--dyvo-badge-success-border, var(--dyvo-badge-tip-border, var(--vp-badge-tip-border, transparent)));
-  color: var(--dyvo-badge-success-text, var(--dyvo-badge-tip-text, var(--vp-badge-tip-text, var(--vp-c-tip-1))));
-  background-color: var(--dyvo-badge-success-bg, var(--dyvo-badge-tip-bg, var(--vp-badge-tip-bg, var(--vp-c-tip-soft))));
+.dyvo-badge.info {
+  --dyvo-badge-soft-text-color: var(--dyvo-badge-info-text-color, var(--vp-badge-info-text, var(--vp-c-text-2)));
+  --dyvo-badge-soft-bg-color: var(--dyvo-badge-info-bg-color, var(--vp-badge-info-bg, var(--vp-c-default-soft)));
+  --dyvo-badge-soft-border-color: var(--dyvo-badge-info-soft-border-color, transparent);
+  --dyvo-badge-solid-text-color: var(--dyvo-badge-info-solid-text-color, var(--vp-c-bg));
+  --dyvo-badge-solid-bg-color: var(--dyvo-badge-info-solid-bg-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-solid-border-color: var(--dyvo-badge-info-solid-border-color, var(--dyvo-badge-solid-bg-color));
+  --dyvo-badge-outline-text-color: var(--dyvo-badge-info-outline-text-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-outline-bg-color: var(--dyvo-badge-info-outline-bg-color, transparent);
+  --dyvo-badge-outline-border-color: var(--dyvo-badge-info-outline-border-color, var(--dyvo-badge-info-border-color, var(--dyvo-badge-outline-text-color)));
+  --dyvo-badge-plain-text-color: var(--dyvo-badge-info-plain-text-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-plain-bg-color: var(--dyvo-badge-info-plain-bg-color, transparent);
+  --dyvo-badge-plain-border-color: var(--dyvo-badge-info-plain-border-color, transparent);
 }
 
-.DyvoBadge--neutral {
-  border-color: var(--dyvo-badge-neutral-border, var(--vp-c-divider, #c2c2c4));
-  color: var(--dyvo-badge-neutral-text, var(--vp-c-text-2, #6a6a71));
-  background-color: var(--dyvo-badge-neutral-bg, var(--vp-c-bg-soft, #f6f6f7));
+.dyvo-badge.tip {
+  --dyvo-badge-soft-text-color: var(--dyvo-badge-tip-text-color, var(--vp-badge-tip-text, var(--vp-c-tip-1)));
+  --dyvo-badge-soft-bg-color: var(--dyvo-badge-tip-bg-color, var(--vp-badge-tip-bg, var(--vp-c-tip-soft)));
+  --dyvo-badge-soft-border-color: var(--dyvo-badge-tip-soft-border-color, transparent);
+  --dyvo-badge-solid-text-color: var(--dyvo-badge-tip-solid-text-color, var(--vp-c-bg));
+  --dyvo-badge-solid-bg-color: var(--dyvo-badge-tip-solid-bg-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-solid-border-color: var(--dyvo-badge-tip-solid-border-color, var(--dyvo-badge-solid-bg-color));
+  --dyvo-badge-outline-text-color: var(--dyvo-badge-tip-outline-text-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-outline-bg-color: var(--dyvo-badge-tip-outline-bg-color, transparent);
+  --dyvo-badge-outline-border-color: var(--dyvo-badge-tip-outline-border-color, var(--dyvo-badge-tip-border-color, var(--dyvo-badge-outline-text-color)));
+  --dyvo-badge-plain-text-color: var(--dyvo-badge-tip-plain-text-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-plain-bg-color: var(--dyvo-badge-tip-plain-bg-color, transparent);
+  --dyvo-badge-plain-border-color: var(--dyvo-badge-tip-plain-border-color, transparent);
 }
 
-.DyvoBadge--brand {
-  border-color: var(--dyvo-badge-brand-border, var(--vp-c-brand-1, #2b50c9));
-  color: var(--dyvo-badge-brand-text, var(--vp-c-brand-1, #2b50c9));
-  background-color: var(--dyvo-badge-brand-bg, var(--vp-c-brand-soft, rgba(43, 80, 201, 0.14)));
+.dyvo-badge.warning {
+  --dyvo-badge-soft-text-color: var(--dyvo-badge-warning-text-color, var(--vp-badge-warning-text, var(--vp-c-warning-1)));
+  --dyvo-badge-soft-bg-color: var(--dyvo-badge-warning-bg-color, var(--vp-badge-warning-bg, var(--vp-c-warning-soft)));
+  --dyvo-badge-soft-border-color: var(--dyvo-badge-warning-soft-border-color, transparent);
+  --dyvo-badge-solid-text-color: var(--dyvo-badge-warning-solid-text-color, #5f3b00);
+  --dyvo-badge-solid-bg-color: var(--dyvo-badge-warning-solid-bg-color, #f2c14e);
+  --dyvo-badge-solid-border-color: var(--dyvo-badge-warning-solid-border-color, var(--dyvo-badge-solid-bg-color));
+  --dyvo-badge-outline-text-color: var(--dyvo-badge-warning-outline-text-color, #b87400);
+  --dyvo-badge-outline-bg-color: var(--dyvo-badge-warning-outline-bg-color, transparent);
+  --dyvo-badge-outline-border-color: var(--dyvo-badge-warning-outline-border-color, var(--dyvo-badge-warning-border-color, var(--dyvo-badge-outline-text-color)));
+  --dyvo-badge-plain-text-color: var(--dyvo-badge-warning-plain-text-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-plain-bg-color: var(--dyvo-badge-warning-plain-bg-color, transparent);
+  --dyvo-badge-plain-border-color: var(--dyvo-badge-warning-plain-border-color, transparent);
 }
 
-.VPDocFooter .DyvoBadge {
+.dyvo-badge.danger {
+  --dyvo-badge-soft-text-color: var(--dyvo-badge-danger-text-color, var(--vp-badge-danger-text, var(--vp-c-danger-1)));
+  --dyvo-badge-soft-bg-color: var(--dyvo-badge-danger-bg-color, var(--vp-badge-danger-bg, var(--vp-c-danger-soft)));
+  --dyvo-badge-soft-border-color: var(--dyvo-badge-danger-soft-border-color, transparent);
+  --dyvo-badge-solid-text-color: var(--dyvo-badge-danger-solid-text-color, var(--vp-c-bg));
+  --dyvo-badge-solid-bg-color: var(--dyvo-badge-danger-solid-bg-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-solid-border-color: var(--dyvo-badge-danger-solid-border-color, var(--dyvo-badge-solid-bg-color));
+  --dyvo-badge-outline-text-color: var(--dyvo-badge-danger-outline-text-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-outline-bg-color: var(--dyvo-badge-danger-outline-bg-color, transparent);
+  --dyvo-badge-outline-border-color: var(--dyvo-badge-danger-outline-border-color, var(--dyvo-badge-danger-border-color, var(--dyvo-badge-outline-text-color)));
+  --dyvo-badge-plain-text-color: var(--dyvo-badge-danger-plain-text-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-plain-bg-color: var(--dyvo-badge-danger-plain-bg-color, transparent);
+  --dyvo-badge-plain-border-color: var(--dyvo-badge-danger-plain-border-color, transparent);
+}
+
+.dyvo-badge.success {
+  --dyvo-badge-soft-text-color: var(--dyvo-badge-success-text-color, var(--vp-c-success-1));
+  --dyvo-badge-soft-bg-color: var(--dyvo-badge-success-bg-color, var(--vp-c-success-soft));
+  --dyvo-badge-soft-border-color: var(--dyvo-badge-success-soft-border-color, transparent);
+  --dyvo-badge-solid-text-color: var(--dyvo-badge-success-solid-text-color, var(--vp-c-bg));
+  --dyvo-badge-solid-bg-color: var(--dyvo-badge-success-solid-bg-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-solid-border-color: var(--dyvo-badge-success-solid-border-color, var(--dyvo-badge-solid-bg-color));
+  --dyvo-badge-outline-text-color: var(--dyvo-badge-success-outline-text-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-outline-bg-color: var(--dyvo-badge-success-outline-bg-color, transparent);
+  --dyvo-badge-outline-border-color: var(--dyvo-badge-success-outline-border-color, var(--dyvo-badge-success-border-color, var(--dyvo-badge-outline-text-color)));
+  --dyvo-badge-plain-text-color: var(--dyvo-badge-success-plain-text-color, var(--dyvo-badge-soft-text-color));
+  --dyvo-badge-plain-bg-color: var(--dyvo-badge-success-plain-bg-color, transparent);
+  --dyvo-badge-plain-border-color: var(--dyvo-badge-success-plain-border-color, transparent);
+}
+
+.VPDocFooter .dyvo-badge {
   display: none;
 }
 
-.vp-doc h1 > .DyvoBadge {
+.vp-doc h1 > .dyvo-badge {
   margin-top: 4px;
   vertical-align: top;
 }
 
-.vp-doc h2 > .DyvoBadge {
+.vp-doc h2 > .dyvo-badge {
   margin-top: 3px;
   padding: 0 8px;
   vertical-align: top;
 }
 
-.vp-doc h3 > .DyvoBadge {
+.vp-doc h3 > .dyvo-badge {
   vertical-align: middle;
 }
 
-.vp-doc h4 > .DyvoBadge,
-.vp-doc h5 > .DyvoBadge,
-.vp-doc h6 > .DyvoBadge {
+.vp-doc h4 > .dyvo-badge,
+.vp-doc h5 > .dyvo-badge,
+.vp-doc h6 > .dyvo-badge {
   vertical-align: middle;
   line-height: 18px;
 }
