@@ -15,13 +15,13 @@ type DyvoBadgeColor =
 
 type DyvoBadgeVariant = 'soft' | 'accent' | 'solid' | 'outline' | 'plain'
 
-type DyvoBadgeSize = 'xs' | 'sm' | 'md' | 'lg'
+type DyvoBadgeSize = 'extra-small' | 'small' | 'medium' | 'large'
 
 type DyvoBadgeState = 'interactive' | 'disabled'
 
 const badgeColors = ['info', 'tip', 'warning', 'danger', 'success'] as const
 const badgeVariants = ['soft', 'accent', 'solid', 'outline', 'plain'] as const
-const badgeSizes = ['xs', 'sm', 'md', 'lg'] as const
+const badgeSizes = ['extra-small', 'small', 'medium', 'large'] as const
 const badgeStates = ['interactive', 'disabled'] as const
 
 const attrs = useAttrs()
@@ -39,7 +39,7 @@ const props = withDefaults(defineProps<{
   text: '',
   color: 'tip',
   variant: 'soft',
-  size: 'md',
+  size: 'medium',
   image: '',
   href: undefined,
   clickable: false,
@@ -134,8 +134,8 @@ const isInteractive = computed(() => (
 
 <style>
 .dyvo-badge {
-  --dyvo-badge-padding-x: var(--dyvo-badge-md-padding-x, 10px);
-  --dyvo-badge-line-height: var(--dyvo-badge-md-line-height, 22px);
+  --dyvo-badge-padding-x: var(--dyvo-badge-medium-padding-x, 10px);
+  --dyvo-badge-line-height: var(--dyvo-badge-medium-line-height, 22px);
   display: inline-flex;
   align-items: center;
   gap: var(--dyvo-badge-gap, 6px);
@@ -154,7 +154,7 @@ const isInteractive = computed(() => (
   background-color: var(--dyvo-badge-bg-color, transparent);
 }
 
-.dyvo-badge.sm {
+.dyvo-badge.small {
   --dyvo-badge-padding-x: var(--dyvo-badge-small-padding-x, 6px);
   --dyvo-badge-line-height: var(--dyvo-badge-small-line-height, 18px);
   padding: var(--dyvo-badge-small-padding-y, 0) var(--dyvo-badge-padding-x);
@@ -162,28 +162,28 @@ const isInteractive = computed(() => (
   font-size: var(--dyvo-badge-small-font-size, 10px);
 }
 
-.dyvo-badge.xs {
-  --dyvo-badge-padding-x: var(--dyvo-badge-xs-padding-x, 4px);
-  --dyvo-badge-line-height: var(--dyvo-badge-xs-line-height, 16px);
-  padding: var(--dyvo-badge-xs-padding-y, 0) var(--dyvo-badge-padding-x);
+.dyvo-badge.extra-small {
+  --dyvo-badge-padding-x: var(--dyvo-badge-extra-small-padding-x, 4px);
+  --dyvo-badge-line-height: var(--dyvo-badge-extra-small-line-height, 16px);
+  padding: var(--dyvo-badge-extra-small-padding-y, 0) var(--dyvo-badge-padding-x);
   line-height: var(--dyvo-badge-line-height);
-  font-size: var(--dyvo-badge-xs-font-size, 9px);
+  font-size: var(--dyvo-badge-extra-small-font-size, 9px);
 }
 
-.dyvo-badge.md {
-  --dyvo-badge-padding-x: var(--dyvo-badge-md-padding-x, 10px);
-  --dyvo-badge-line-height: var(--dyvo-badge-md-line-height, 22px);
+.dyvo-badge.medium {
+  --dyvo-badge-padding-x: var(--dyvo-badge-medium-padding-x, 10px);
+  --dyvo-badge-line-height: var(--dyvo-badge-medium-line-height, 22px);
   padding: var(--dyvo-badge-padding-y, 0) var(--dyvo-badge-padding-x);
   line-height: var(--dyvo-badge-line-height);
   font-size: var(--dyvo-badge-font-size, 12px);
 }
 
-.dyvo-badge.lg {
-  --dyvo-badge-padding-x: var(--dyvo-badge-lg-padding-x, 12px);
-  --dyvo-badge-line-height: var(--dyvo-badge-lg-line-height, 26px);
-  padding: var(--dyvo-badge-lg-padding-y, 0) var(--dyvo-badge-padding-x);
+.dyvo-badge.large {
+  --dyvo-badge-padding-x: var(--dyvo-badge-large-padding-x, 12px);
+  --dyvo-badge-line-height: var(--dyvo-badge-large-line-height, 26px);
+  padding: var(--dyvo-badge-large-padding-y, 0) var(--dyvo-badge-padding-x);
   line-height: var(--dyvo-badge-line-height);
-  font-size: var(--dyvo-badge-lg-font-size, var(--vp-custom-block-font-size, 14px));
+  font-size: var(--dyvo-badge-large-font-size, var(--vp-custom-block-font-size, 14px));
 }
 
 .dyvo-badge.interactive {
