@@ -32,6 +32,7 @@ const props = withDefaults(defineProps<{
   variant?: DyvoBadgeVariant
   size?: DyvoBadgeSize
   image?: string
+  imageAlt?: string
   href?: string
   clickable?: boolean
   disabled?: boolean
@@ -41,6 +42,7 @@ const props = withDefaults(defineProps<{
   variant: 'soft',
   size: 'medium',
   image: '',
+  imageAlt: '',
   href: undefined,
   clickable: false,
   disabled: false
@@ -123,7 +125,7 @@ const isInteractive = computed(() => (
   >
     <span v-if="image || $slots.image" class="dyvo-badge-image" aria-hidden="true">
       <slot name="image">
-        <img :src="image" alt="" />
+        <img :src="image" :alt="imageAlt" />
       </slot>
     </span>
     <span class="dyvo-badge-label">
