@@ -139,8 +139,9 @@ const isInteractive = computed(() => (
   --dyvo-badge-padding-x: var(--dyvo-badge-medium-padding-x, 12px);
   --dyvo-badge-padding-y: var(--dyvo-badge-medium-padding-y, 0);
   --dyvo-badge-gap: var(--dyvo-badge-medium-gap, 6px);
-  --dyvo-badge-line-height: var(--dyvo-badge-medium-line-height, var(--site-text-medium-line-height, var(--site-text-line-height, 24px)));
+  --dyvo-badge-line-height: var(--dyvo-badge-medium-line-height, var(--dyvo-text-medium-line-height, 24px));
   --dyvo-badge-image-size: var(--dyvo-badge-line-height);
+  --dyvo-badge-link-color: var(--dyvo-badge-link-default-color, var(--dyvo-badge-text-color, var(--vp-c-text-1)));
   display: inline-flex;
   align-items: center;
   gap: var(--dyvo-badge-gap);
@@ -148,7 +149,7 @@ const isInteractive = computed(() => (
   border-radius: var(--dyvo-badge-radius, 9999px);
   padding: var(--dyvo-badge-padding-y) var(--dyvo-badge-padding-x);
   line-height: var(--dyvo-badge-line-height);
-  font-size: var(--dyvo-badge-font-size, var(--site-text-small-font-size, calc(var(--site-text-font-size, 16px) - 2px)));
+  font-size: var(--dyvo-badge-font-size, var(--dyvo-text-small-font-size, calc(var(--dyvo-text-medium-font-size, 16px) - 2px)));
   font-weight: var(--dyvo-badge-font-weight, 400);
   text-decoration: none;
   white-space: nowrap;
@@ -159,14 +160,25 @@ const isInteractive = computed(() => (
   border-color: var(--dyvo-badge-border-color, transparent);
 }
 
+a.dyvo-badge {
+  color: var(--dyvo-badge-link-color);
+}
+
+a.dyvo-badge:hover {
+  color: var(
+    --dyvo-badge-link-hover-color,
+    color-mix(in srgb, var(--dyvo-badge-link-color) 75%, var(--vp-c-bg) 25%)
+  );
+}
+
 .dyvo-badge.small {
   --dyvo-badge-padding-x: var(--dyvo-badge-small-padding-x, 10px);
   --dyvo-badge-padding-y: var(--dyvo-badge-small-padding-y, 0);
   --dyvo-badge-gap: var(--dyvo-badge-small-gap, 5px);
-  --dyvo-badge-line-height: var(--dyvo-badge-small-line-height, var(--site-text-small-line-height, calc(var(--site-text-line-height, 24px) - 4px)));
+  --dyvo-badge-line-height: var(--dyvo-badge-small-line-height, var(--dyvo-text-small-line-height, calc(var(--dyvo-text-medium-line-height, 24px) - 4px)));
   padding: var(--dyvo-badge-padding-y) var(--dyvo-badge-padding-x);
   line-height: var(--dyvo-badge-line-height);
-  font-size: var(--dyvo-badge-small-font-size, var(--site-text-xsmall-font-size, calc(var(--site-text-font-size, 16px) - 4px)));
+  font-size: var(--dyvo-badge-small-font-size, var(--dyvo-text-xsmall-font-size, calc(var(--dyvo-text-medium-font-size, 16px) - 4px)));
   font-weight: var(--dyvo-badge-small-font-weight, 500);
 }
 
@@ -174,10 +186,10 @@ const isInteractive = computed(() => (
   --dyvo-badge-padding-x: var(--dyvo-badge-medium-padding-x, 12px);
   --dyvo-badge-padding-y: var(--dyvo-badge-medium-padding-y, 0);
   --dyvo-badge-gap: var(--dyvo-badge-medium-gap, 6px);
-  --dyvo-badge-line-height: var(--dyvo-badge-medium-line-height, var(--site-text-medium-line-height, var(--site-text-line-height, 24px)));
+  --dyvo-badge-line-height: var(--dyvo-badge-medium-line-height, var(--dyvo-text-medium-line-height, 24px));
   padding: var(--dyvo-badge-padding-y) var(--dyvo-badge-padding-x);
   line-height: var(--dyvo-badge-line-height);
-  font-size: var(--dyvo-badge-medium-font-size, var(--site-text-small-font-size, calc(var(--site-text-font-size, 16px) - 2px)));
+  font-size: var(--dyvo-badge-medium-font-size, var(--dyvo-text-small-font-size, calc(var(--dyvo-text-medium-font-size, 16px) - 2px)));
   font-weight: var(--dyvo-badge-medium-font-weight, 400);
 }
 
@@ -185,10 +197,10 @@ const isInteractive = computed(() => (
   --dyvo-badge-padding-x: var(--dyvo-badge-large-padding-x, 14px);
   --dyvo-badge-padding-y: var(--dyvo-badge-large-padding-y, 0);
   --dyvo-badge-gap: var(--dyvo-badge-large-gap, 8px);
-  --dyvo-badge-line-height: var(--dyvo-badge-large-line-height, var(--site-text-large-line-height, calc(var(--site-text-line-height, 24px) + 4px)));
+  --dyvo-badge-line-height: var(--dyvo-badge-large-line-height, var(--dyvo-text-large-line-height, calc(var(--dyvo-text-medium-line-height, 24px) + 4px)));
   padding: var(--dyvo-badge-padding-y) var(--dyvo-badge-padding-x);
   line-height: var(--dyvo-badge-line-height);
-  font-size: var(--dyvo-badge-large-font-size, var(--site-text-medium-font-size, var(--site-text-font-size, 16px)));
+  font-size: var(--dyvo-badge-large-font-size, var(--dyvo-text-medium-font-size, 16px));
   font-weight: var(--dyvo-badge-large-font-weight, 400);
 }
 

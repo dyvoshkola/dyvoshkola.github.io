@@ -1,6 +1,6 @@
 body {
-  font-size: var(--site-text-font-size);
-  line-height: var(--site-text-line-height);
+  font-size: var(--dyvo-text-medium-font-size);
+  line-height: var(--dyvo-text-medium-line-height);
 }
 
 :root {
@@ -33,19 +33,16 @@ body {
   --vp-c-red-3: color-mix(in srgb, var(--vp-c-red-1) 55%, var(--vp-c-bg) 45%);
   --vp-c-red-soft: color-mix(in srgb, var(--vp-c-red-1) 12%, transparent);
 
-  --site-text-font-size: var(--site-text-medium-font-size);
-  --site-text-line-height: var(--site-text-medium-line-height);
-
-  --site-text-medium-font-size: 16px;
-  --site-text-medium-line-height: 24px;
-  --site-text-large-font-size: 18px;
-  --site-text-large-line-height: 28px;
-  --site-text-xlarge-font-size: 20px;
-  --site-text-xlarge-line-height: 28px;
-  --site-text-small-font-size: 14px;
-  --site-text-small-line-height: 20px;
-  --site-text-xsmall-font-size: 12px;
-  --site-text-xsmall-line-height: 16px;
+  --dyvo-text-medium-font-size: 16px;
+  --dyvo-text-medium-line-height: 24px;
+  --dyvo-text-large-font-size: 18px;
+  --dyvo-text-large-line-height: 28px;
+  --dyvo-text-xlarge-font-size: 20px;
+  --dyvo-text-xlarge-line-height: 28px;
+  --dyvo-text-small-font-size: 14px;
+  --dyvo-text-small-line-height: 20px;
+  --dyvo-text-xsmall-font-size: 12px;
+  --dyvo-text-xsmall-line-height: 16px;
   
   /*--dyvo-badge-warning-text-color: #d68000;
   --dyvo-badge-warning-solid-text-color: #503100;

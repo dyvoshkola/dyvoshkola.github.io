@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useData } from 'vitepress'
-import UserIdentity from '../../theme/components/UserIdentity.vue'
+import DyvoUserBadge from '../../theme/components/DyvoUserBadge.vue'
 import { normalizeBoolean, normalizeNewsAuthors, type NewsAuthor } from './utils'
 
 const props = defineProps<{
@@ -33,7 +33,7 @@ const showLabel = computed(() => normalizeBoolean(props.showLabel, true))
     <p v-if="showLabel" class="news-meta-authors-label">{{ authorLabel }}</p>
     <div class="news-meta-authors-list">
       <template v-for="(author, index) in resolvedAuthors" :key="`${author.name}-${author.github ?? index}`">
-        <UserIdentity
+        <DyvoUserBadge
           class="news-meta-author-card"
           :name="author.name"
           :github="author.github"

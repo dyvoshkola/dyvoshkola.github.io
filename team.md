@@ -13,9 +13,9 @@ comments: false
 
 # Команда Дивошколи <DyvoBadge color="info" variant="solid">2</DyvoBadge>
 
-<UserIdentity name="Юрій Апостол" github="yuriyapostol" />
+<p><DyvoUserBadge name="Юрій Апостол" github="yuriyapostol" /> — засновник і керівник Дивошколи, а також спортивно-оздоровчих проектів <a href="https://www.facebook.com/run.obukhiv/">Біжи, Обухів!</a> та <a href="https://www.facebook.com/velo.obukhiv/">Вело-Обухів</a>. Займається full-stack веброзробкою, вебдизайном, створює інтерактивні векторіні ілюстрації та анімації для сайтів і вебдодатків.</p>
 
-<UserIdentity name="Михайло Апостол" github="mykhailoapostol" />
+<p><DyvoUserBadge name="Михайло Апостол" github="mykhailoapostol" /> — помічник і співавтор матеріалів. Займається робототехнікою, програмуванням пристроїв на мікроконтролерах і ремонтом електроніки. Навчається в школі.</p>
 
 ## DyvoBadge <DyvoBadge>new</DyvoBadge>
 
