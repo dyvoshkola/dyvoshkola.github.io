@@ -34,9 +34,9 @@ const showLabel = computed(() => normalizeBoolean(props.showLabel, true))
     <div class="news-meta-authors-list">
       <template v-for="(author, index) in resolvedAuthors" :key="`${author.name}-${author.github ?? index}`">
         <DyvoUserBadge
-          class="news-meta-author-card"
           :name="author.name"
           :github="author.github"
+          size="medium"
         />
       </template>
     </div>
@@ -49,7 +49,7 @@ const showLabel = computed(() => normalizeBoolean(props.showLabel, true))
 }
 
 .news-meta-authors-label {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.25rem;
   font-weight: 600;
   color: var(--vp-c-text-1);
 }
@@ -57,10 +57,6 @@ const showLabel = computed(() => normalizeBoolean(props.showLabel, true))
 .news-meta-authors-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem 1rem;
-}
-
-.news-meta-author-card {
-  line-height: 1.4;
+  gap: 0.25rem 0.5rem;
 }
 </style>
