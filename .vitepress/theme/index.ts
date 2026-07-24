@@ -10,7 +10,6 @@ import DyvoBadge from './components/DyvoBadge.vue'
 import DyvoUserBadge from './components/DyvoUserBadge.vue'
 import Layout from './components/Layout.vue'
 import NewsList from '../features/news/NewsList.vue'
-import UserIdentity from './components/UserIdentity.vue'
 import { defineComponent, h } from 'vue'
 import './custom.css'
 
@@ -36,7 +35,6 @@ const theme: Theme = {
     app.component('NewsMetaAuthors', NewsMetaAuthors)
     app.component('NewsMetaPublishedAt', NewsMetaPublishedAt)
     app.component('NewsMetaStatuses', NewsMetaStatuses)
-    app.component('UserIdentity', UserIdentity)
   },
   Layout: ThemeLayout
 }
