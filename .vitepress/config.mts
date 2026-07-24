@@ -2,9 +2,7 @@ import { createConfig } from '@yuriyapostol/dyvo-vitepress/config'
 import type { ThemeConfig } from '@yuriyapostol/dyvo-vitepress/theme/config'
 
 const siteUrl = 'https://dyvoshkola.github.io'
-const defaultOgImage = `${siteUrl}/logo-light.svg`
 const siteLocale = 'uk-UA'
-const contentTimeZone = 'Europe/Kyiv'
 
 const themeConfig: ThemeConfig = {
   logo: {
@@ -47,7 +45,7 @@ const themeConfig: ThemeConfig = {
     emitMetadata: '0',
     inputPosition: 'bottom'
   },
-  contentTimeZone,
+  contentTimeZone: 'Europe/Kyiv',
   news: {
     enabled: true,
     basePath: '/news/',
@@ -127,7 +125,7 @@ export default createConfig({
   description: 'Дивошкола — відкритий до експериментів освітній проект про корисні знання і навички. Ми прагнемо щодня дивувати й допомагати творити дива через навчання та практику.',
   seo: {
     siteUrl,
-    defaultOgImage,
+    defaultOgImage: `${siteUrl}/logo-light.svg`,
     siteLocale,
     siteName: 'Дивошкола'
   },

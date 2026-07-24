@@ -11,11 +11,13 @@ import {
 } from '@yuriyapostol/dyvo-vitepress'
 import { defineComponent, h } from 'vue'
 
+const DyvoThemeLayout = DyvoTheme.Layout as unknown as Parameters<typeof h>[0]
+
 const ThemeLayout = defineComponent({
   name: 'DyvoshkolaThemeLayout',
   setup(_, { slots }) {
     return () =>
-      h(DyvoTheme.Layout!, null, {
+      h(DyvoThemeLayout, null, {
         ...slots,
         'doc-after': () => [slots['doc-after']?.(), h(Comments)]
       })
@@ -24,8 +26,9 @@ const ThemeLayout = defineComponent({
 
 const theme: Theme = {
   extends: DyvoTheme,
-  enhanceApp({ app }) {
-    DyvoTheme.enhanceApp?.({ app })
+  enhanceApp(ctx) {
+    DyvoTheme.enhanceApp?.(ctx)
+    const { app } = ctx
     app.component('NewsArchiveLinks', NewsArchiveLinks)
     app.component('NewsList', NewsList)
     app.component('NewsMeta', NewsMeta)
