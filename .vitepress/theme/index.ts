@@ -1,23 +1,21 @@
-import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
-import Comments from '../features/comments/Comments.vue'
-import NewsArchiveLinks from '../features/news/NewsArchiveLinks.vue'
-import NewsMeta from '../features/news/NewsMeta.vue'
-import NewsMetaAuthors from '../features/news/NewsMetaAuthors.vue'
-import NewsMetaPublishedAt from '../features/news/NewsMetaPublishedAt.vue'
-import NewsMetaStatuses from '../features/news/NewsMetaStatuses.vue'
-import DyvoBadge from './components/DyvoBadge.vue'
-import DyvoUserBadge from './components/DyvoUserBadge.vue'
-import Layout from './components/Layout.vue'
-import NewsList from '../features/news/NewsList.vue'
+import {
+  Comments,
+  NewsArchiveLinks,
+  NewsList,
+  NewsMeta,
+  NewsMetaAuthors,
+  NewsMetaPublishedAt,
+  NewsMetaStatuses,
+  theme as DyvoTheme
+} from '@yuriyapostol/dyvo-vitepress'
 import { defineComponent, h } from 'vue'
-import './custom.css'
 
 const ThemeLayout = defineComponent({
   name: 'DyvoshkolaThemeLayout',
   setup(_, { slots }) {
     return () =>
-      h(Layout, null, {
+      h(DyvoTheme.Layout!, null, {
         ...slots,
         'doc-after': () => [slots['doc-after']?.(), h(Comments)]
       })
@@ -25,10 +23,9 @@ const ThemeLayout = defineComponent({
 })
 
 const theme: Theme = {
-  extends: DefaultTheme,
+  extends: DyvoTheme,
   enhanceApp({ app }) {
-    app.component('DyvoBadge', DyvoBadge)
-    app.component('DyvoUserBadge', DyvoUserBadge)
+    DyvoTheme.enhanceApp?.({ app })
     app.component('NewsArchiveLinks', NewsArchiveLinks)
     app.component('NewsList', NewsList)
     app.component('NewsMeta', NewsMeta)

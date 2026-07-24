@@ -25,6 +25,7 @@
     "vitepress": "^1.6.4"
   },
   "dependencies": {
-    "@giscus/vue": "^3.1.1"
+    "@giscus/vue": "^3.1.1",
+    "@yuriyapostol/dyvo-vitepress": "github:yuriyapostol/dyvo-vitepress#v0.1.1"
   }
 }

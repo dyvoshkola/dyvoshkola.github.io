@@ -2,8 +2,8 @@ import { defineConfig } from 'vitepress'
 import type { HeadConfig } from 'vitepress'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { toOpenGraphLocale } from './shared/i18n'
-import type { AppThemeConfig } from './theme/config'
+import { toOpenGraphLocale } from '@yuriyapostol/dyvo-vitepress/shared/i18n'
+import type { ThemeConfig } from '@yuriyapostol/dyvo-vitepress/theme/config'
 
 const siteUrl = 'https://dyvoshkola.github.io'
 const defaultOgImage = `${siteUrl}/logo-light.svg`
@@ -142,7 +142,7 @@ function resolveKeywords(value: unknown) {
   return ''
 }
 
-const themeConfig: AppThemeConfig = {
+const themeConfig: ThemeConfig = {
   logo: {
     light: '/logo-light.svg',
     dark: '/logo-dark.svg',
@@ -171,8 +171,22 @@ const themeConfig: AppThemeConfig = {
     linkText: 'На головну',
     code: '404'
   },
+  comments: {
+    enabled: true,
+    repo: 'dyvoshkola/dyvoshkola-comments',
+    repoId: 'R_kgDOS74Suw',
+    category: 'Comments',
+    categoryId: 'DIC_kwDOS74Su84C_PHE',
+    mapping: 'specific',
+    strict: '1',
+    reactionsEnabled: '1',
+    emitMetadata: '0',
+    inputPosition: 'bottom'
+  },
   contentTimeZone,
   news: {
+    enabled: true,
+    basePath: '/news/',
     labels: {
       emptyState: 'Поки що новин немає.',
       referenceDayLink: 'Всі новини за {label}',
