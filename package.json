@@ -26,6 +26,6 @@
   },
   "dependencies": {
     "@giscus/vue": "^3.1.1",
-    "@yuriyapostol/dyvo-vitepress": "github:yuriyapostol/dyvo-vitepress#v0.2.0"
+    "@yuriyapostol/dyvo-vitepress-theme": "github:yuriyapostol/dyvo-vitepress-theme#v0.2.3"
   }
 }

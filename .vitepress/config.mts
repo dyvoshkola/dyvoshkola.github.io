@@ -1,5 +1,5 @@
-import { createConfig } from '@yuriyapostol/dyvo-vitepress/config'
-import type { ThemeConfig } from '@yuriyapostol/dyvo-vitepress/theme/config'
+import { createConfig } from '@yuriyapostol/dyvo-vitepress-theme/config'
+import type { ThemeConfig } from '@yuriyapostol/dyvo-vitepress-theme/theme/config'
 
 const siteUrl = 'https://dyvoshkola.github.io'
 const siteLocale = 'uk-UA'
